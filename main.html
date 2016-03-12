@@ -1,0 +1,82 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<script src="jquery-1.12.0.min.js"></script>
+		<script defer src="https://code.getmdl.io/1.1.1/material.min.js"></script>
+		<script src="polyominoScript.js"></script>
+		<meta charset="utf-8">
+		<title>Polyomino</title>  
+		<link rel="stylesheet" href="polyominoStyle.css"> 
+		<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+		<link rel="stylesheet" href="https://code.getmdl.io/1.1.1/material.deep_orange-amber.min.css">
+	</head>
+	<body>
+		<div class="demo-layout-transparent mdl-layout mdl-js-layout">
+		  <header class="mdl-layout__header mdl-layout__header--transparent">
+			<div class="mdl-layout__header-row">
+			  <!-- Title -->
+			  <span class="mdl-layout-title">My polyomino</span>
+			</div>
+		  </header>
+		  <div class="mdl-layout__drawer">
+			<span class="mdl-layout-title">Settings</span>			
+		  </div>
+		  <main class="mdl-layout__content">
+			<div class="polyomino-area">
+				<div class='statistic'> Number of empty cells:&nbsp;<span class='statisticSpan'></span>
+					<button id="resetBarrierCells" 
+						class="mdl-button mdl-js-button mdl-button--icon mdl-button--raised mdl-button--accent mdl-js-ripple-effect">
+						<i class="material-icons">clear</i>
+					</button>
+					<div class="mdl-tooltip" for="resetBarrierCells">
+						Reset all barrier cells
+					</div>
+				</div>	
+				<div class='arrow-area'>
+					<table class='arrowtable'>
+						<tr class="arrow-tr">
+							<td class="arrow-td"></td>
+							<td class="arrow-td">
+								<div id="arrow-top" class="arrow-div arrow-top"></div>
+								<div class="mdl-tooltip" for="arrow-top">
+									Remove row
+								</div>
+							</td>								
+							<td class="arrow-td"></td>
+						</tr>
+						<tr class="arrow-tr">
+							<td class="arrow-td">
+								<div id="arrow-left" class="arrow-div arrow-left"></div>
+								<div class="mdl-tooltip" for="arrow-left">
+									Remove column
+								</div>
+							</td>
+							<td class="arrow-td"></td>
+							<td class="arrow-td">
+								<div id="arrow-right" class="arrow-div arrow-right"></div>
+								<div class="mdl-tooltip" for="arrow-right">
+									Add column
+								</div>
+							</td>
+						</tr>
+						<tr class="arrow-tr">
+							<td class="arrow-td"></td>
+							<td class="arrow-td">
+								<div id="arrow-bottom" class="arrow-div arrow-bottom"></div>
+								<div class="mdl-tooltip" for="arrow-bottom">
+									Add row
+								</div>
+							</td>
+							<td class="arrow-td"></td>
+						</tr>
+					</table>
+				</div>	
+				<div>				
+					<table class='polytable mdl-shadow--2dp'>
+					</table>
+				</div>
+			</div>
+		  </main>
+		</div>
+	</body>
+</html>
