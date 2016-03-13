@@ -1,12 +1,48 @@
 var numberOfRows, numberOfColumns;
-var pieces = [
+/*var pieces = [
 				CreatePiece([
 					[0,0],[0,1],[0,2]
 				]),
 				CreatePiece([
 					[0,0],[1,0],[2,0]
+				]),
+				CreatePiece([
+					[0,0],[0,1],[1,0]
+				]),
+				CreatePiece([
+					[0,0],[0,1],[1,1]
+				]),
+				CreatePiece([
+					[0,0],[1,0],[1,1]
+				]),
+				CreatePiece([
+					[0,1],[1,0],[1,1]
 				])
 			];
+*/		
+var pieces = [
+				CreatePiece([
+					[0,0],[0,1],[0,2],[0,3]
+				]),
+				CreatePiece([
+					[0,0],[1,0],[2,0],[3,0]
+				]),
+				CreatePiece([
+					[0,0],[0,1],[1,0],[2,0]
+				]),
+				CreatePiece([
+					[0,0],[0,1],[0,2],[1,2]
+				]),
+				CreatePiece([
+					[0,0],[1,0],[1,1],[1,2]
+				]),
+				CreatePiece([
+					[0,1],[1,1],[2,0],[2,1]
+				])
+			];	
+var piecesLength = [4]; 
+var isSolutionFound = false;
+
 
 function SetInitialPolynomioTable()
 {
@@ -130,15 +166,35 @@ function GetStartNode(arr)
 	}		
 }
 
-function CreateNode(row, column)
+function CreateNode(r, c)
 {
-	return {R: row, C: column};
+	return {row: r, column: c};
+}
+
+function AreNodesEqual(node1, node2)
+{
+	return (node1.row == node2.row) && (node1.column == node2.column);	
+}
+
+function NodeToString(node)
+{
+	return node.row + ',' + node.column;
+}
+
+//example: 1,1
+function StringToNode(str)
+{
+	var position = str.indexOf(',');
+	var row = str.substr(0, position);
+	var column = str.substr(position + 1);
+	return CreateNode(row, column);
+	
 }
 
 function CountOneComponent(startNode, arr)
 {
 	var size = 0;
-	arr[startNode.R][startNode.C] = 1;
+	arr[startNode.row][startNode.column] = 1;
 	var neighbours = GetNeighbours(startNode, arr);	
 	
 	if (neighbours.length == 0)
@@ -148,7 +204,7 @@ function CountOneComponent(startNode, arr)
 	
 	for (var t = 0; t < neighbours.length; t++)
 	{
-		arr[neighbours[t].R][neighbours[t].C] = 1;
+		arr[neighbours[t].row][neighbours[t].column] = 1;
 		size++;
 	}	
 	
@@ -164,21 +220,21 @@ function GetNeighbours(node, arr)
 {
 	var neighbours = [];
 	// connect diagonal cells
-	//neighbours.push(CreateNode(node.R - 1, node.C - 1));	
-	//neighbours.push(CreateNode(node.R - 1, node.C + 1));
-	//neighbours.push(CreateNode(node.R + 1, node.C - 1));	
-	//neighbours.push(CreateNode(node.R + 1, node.C + 1));
+	//neighbours.push(CreateNode(node.row - 1, node.column - 1));	
+	//neighbours.push(CreateNode(node.row - 1, node.column + 1));
+	//neighbours.push(CreateNode(node.row + 1, node.column - 1));	
+	//neighbours.push(CreateNode(node.row + 1, node.column + 1));
 	
-	neighbours.push(CreateNode(node.R - 1, node.C));
-	neighbours.push(CreateNode(node.R, node.C - 1));	
-	neighbours.push(CreateNode(node.R, node.C + 1));	
-	neighbours.push(CreateNode(node.R + 1, node.C));	
+	neighbours.push(CreateNode(node.row - 1, node.column));
+	neighbours.push(CreateNode(node.row, node.column - 1));	
+	neighbours.push(CreateNode(node.row, node.column + 1));	
+	neighbours.push(CreateNode(node.row + 1, node.column));	
 	
 	for (var i = 0; i < neighbours.length; i++)
 	{
-		if (neighbours[i].R < 0 || neighbours[i].C < 0 
-			|| neighbours[i].R >= arr.length || neighbours[i].C >= arr[0].length
-			|| arr[neighbours[i].R][neighbours[i].C] == 1)
+		if (neighbours[i].row < 0 || neighbours[i].column < 0 
+			|| neighbours[i].row >= arr.length || neighbours[i].column >= arr[0].length
+			|| arr[neighbours[i].row][neighbours[i].column] == 1)
 		{
 			neighbours[i] = undefined;	
 		}
@@ -196,7 +252,14 @@ function GetNeighbours(node, arr)
 //TODO
 function CheckIfProperNumber(number)
 {
-	return number % 3 == 0;
+	for (var i = 0; i < piecesLength.length; i++)
+	{
+		if (number % piecesLength[i] != 0)
+		{
+			return false;
+		}
+	}
+	return true;
 }
 
 // Transform table
@@ -256,77 +319,77 @@ function RemoveRow()
 // test
 function Test_GetMatrixForExactCoverProblem()
 {
-	var header = CreateRootObject();
+	var header = CreateRootObject({});
 	
-	var columnA = CreateColumnObject(undefined, undefined, undefined, undefined, undefined, 2, 'A');
-	var columnB = CreateColumnObject(undefined, undefined, undefined, undefined, undefined, 1, 'B');
-	var columnC = CreateColumnObject(undefined, undefined, undefined, undefined, undefined, 1, 'C')
-	var columnD = CreateColumnObject(undefined, undefined, undefined, undefined, undefined, 2, 'D')
+	var columnA = CreateColumnObject({size: 2, name: 'A'});
+	var columnB = CreateColumnObject({size: 1, name: 'B'});
+	var columnC = CreateColumnObject({size: 1, name: 'C'});
+	var columnD = CreateColumnObject({size: 2, name: 'D'});
 	
-	var itemA1 = CreateDataObject(undefined, undefined, undefined, undefined, columnA);
-	var itemA3 = CreateDataObject(undefined, undefined, undefined, undefined, columnA);
-	var itemB2 = CreateDataObject(undefined, undefined, undefined, undefined, columnB);
-	var itemC1 = CreateDataObject(undefined, undefined, undefined, undefined, columnC);
-	var itemD3 = CreateDataObject(undefined, undefined, undefined, undefined, columnD);
-	var itemD4 = CreateDataObject(undefined, undefined, undefined, undefined, columnD);
+	var itemA1 = CreateDataObject({column: columnA});
+	var itemA3 = CreateDataObject({column: columnA});
+	var itemB2 = CreateDataObject({column: columnB});
+	var itemC1 = CreateDataObject({column: columnC});
+	var itemD3 = CreateDataObject({column: columnD});
+	var itemD4 = CreateDataObject({column: columnD});
 	
 	
-	header.Left = columnD;
-	header.Right = columnA;
+	header.left = columnD;
+	header.right = columnA;
 	
-	columnA.Left = header;
-	columnA.Right = columnB;
-	columnA.Up = itemA3;
-	columnA.Down = itemA1;
-	columnA.Column = columnA;
+	columnA.left = header;
+	columnA.right = columnB;
+	columnA.up = itemA3;
+	columnA.down = itemA1;
+	columnA.column = columnA;
 		
-	columnB.Left = columnA;
-	columnB.Right = columnC;
-	columnB.Up = itemB2	;
-	columnB.Down = itemB2;
-	columnB.Column = columnB;
+	columnB.left = columnA;
+	columnB.right = columnC;
+	columnB.up = itemB2	;
+	columnB.down = itemB2;
+	columnB.column = columnB;
 	
-	columnC.Left = columnB;
-	columnC.Right = columnD;
-	columnC.Up = itemC1;
-	columnC.Down = itemC1;
-	columnC.Column = columnC;
+	columnC.left = columnB;
+	columnC.right = columnD;
+	columnC.up = itemC1;
+	columnC.down = itemC1;
+	columnC.column = columnC;
 	
-	columnD.Left = columnC;
-	columnD.Right = header;
-	columnD.Up = itemD4;
-	columnD.Down = itemD3;
-	columnD.Column = columnD;
+	columnD.left = columnC;
+	columnD.right = header;
+	columnD.up = itemD4;
+	columnD.down = itemD3;
+	columnD.column = columnD;
 	
-	itemA1.Left = itemC1;
-	itemA1.Right = itemC1;
-	itemA1.Up = columnA;
-	itemA1.Down = itemA3;
+	itemA1.left = itemC1;
+	itemA1.right = itemC1;
+	itemA1.up = columnA;
+	itemA1.down = itemA3;
 	
-	itemA3.Left = itemD3;
-	itemA3.Right = itemD3;
-	itemA3.Up = itemA1;
-	itemA3.Down = columnA;
+	itemA3.left = itemD3;
+	itemA3.right = itemD3;
+	itemA3.up = itemA1;
+	itemA3.down = columnA;
 	
-	itemB2.Left = itemB2;
-	itemB2.Right = itemB2;
-	itemB2.Up = columnB;
-	itemB2.Down = columnB;
+	itemB2.left = itemB2;
+	itemB2.right = itemB2;
+	itemB2.up = columnB;
+	itemB2.down = columnB;
 	
-	itemC1.Left = itemA1;
-	itemC1.Right = itemA1;
-	itemC1.Up = columnC;
-	itemC1.Down = columnC;
+	itemC1.left = itemA1;
+	itemC1.right = itemA1;
+	itemC1.up = columnC;
+	itemC1.down = columnC;
 	
-	itemD3.Left = itemA3;
-	itemD3.Right = itemA3;
-	itemD3.Up = columnD;
-	itemD3.Down = itemD4;
+	itemD3.left = itemA3;
+	itemD3.right = itemA3;
+	itemD3.up = columnD;
+	itemD3.down = itemD4;
 	
-	itemD4.Left = itemD4;
-	itemD4.Right = itemD4;
-	itemD4.Up = itemD3;
-	itemD4.Down = columnD;
+	itemD4.left = itemD4;
+	itemD4.right = itemD4;
+	itemD4.up = itemD3;
+	itemD4.down = columnD;
 		
 	return header;
 }
@@ -339,29 +402,29 @@ function CreatePiece(coordinates)
 	{
 		return;
 	}
-	var nodes = [];
-	var maxrow = coordinates[0][0];
-	var maxcol = coordinates[0][1];
+	var _nodes = [];
+	var _maxrow = coordinates[0][0];
+	var _maxcol = coordinates[0][1];
 	for (var i = 0; i < coordinates.length; i++)
 	{
-		nodes.push(CreateNode(coordinates[i][0], coordinates[i][1]));
-		if(coordinates[i][0] > maxrow)
+		_nodes.push(CreateNode(coordinates[i][0], coordinates[i][1]));
+		if(coordinates[i][0] > _maxrow)
 		{
-			maxrow = coordinates[i][0];
+			_maxrow = coordinates[i][0];
 		}
-		if(coordinates[i][1] > maxcol)
+		if(coordinates[i][1] > _maxcol)
 		{
-			maxcol = coordinates[i][1];
+			_maxcol = coordinates[i][1];
 		}
 	}
 		
-	return {Nodes: nodes, Maxrow: maxrow, Maxcol: maxcol};	
+	return {nodes: _nodes, maxrow: _maxrow, maxcol: _maxcol};	
 }
 
 function CreateXListForExactCoverProblem(arr)
 {	
 	//create initial Xlist with header and empty columns
-	var header = CreateInitialXList();
+	var header = CreateInitialXList(arr);
 	for(var p = 0, piece, nodes; p < pieces.length; p++)
 	{
 		piece = pieces[p];
@@ -373,7 +436,7 @@ function CreateXListForExactCoverProblem(arr)
 				var isMatch = true;
 				for (var k = 0; k < nodes.length; k++)
 				{
-					if (arr[i + nodes[k].R][j + nodes[k].C] == 1)
+					if (arr[i + nodes[k].row][j + nodes[k].column] == 1)
 					{
 						isMatch = false;
 						break;
@@ -381,7 +444,7 @@ function CreateXListForExactCoverProblem(arr)
 				}
 				if (isMatch)
 				{
-					AddNewRow(header, piece, i, j);
+					AddNewRow(header, nodes, i, j);
 				}
 			}
 		}
@@ -391,107 +454,280 @@ function CreateXListForExactCoverProblem(arr)
 }
 
 //TODO
-function CreateInitialXList()
+//create initial Xlist with header and empty columns
+function CreateInitialXList(arr)
 {
+	var header = CreateRootObject({});
+	var previousColumn = header;
+	var currentColumn, node;
+	for (var i = 0; i < arr.length; i++)
+	{
+		for (var j = 0; j < arr[i].length; j++)
+		{
+			if (arr[i][j] == 0)
+			{
+				// do I need NodeToString and StringToNode???
+				node = CreateNode(i,j);
+				currentColumn = CreateColumnObject({left: previousColumn, name: node});
+				currentColumn.up = currentColumn;
+				currentColumn.down = currentColumn;
+				currentColumn.column = currentColumn;
+				previousColumn.right = currentColumn;
+				previousColumn = currentColumn;
+			}
+		}
+	}
+	currentColumn.right = header;
+	header.left = currentColumn;
+	return header;
+}
+
+//TODO nodes should be sorted in a right order
+function AddNewRow(header, nodes, row, column)
+{
+	var node = nodes[0];
+	var currentNode = CreateNode(node.row + row, node.column + column);	
+	
+	// current - текушая колонка, в которую надо вставить узел
+	var current = FindColumnForNode(header, currentNode);
+	if (current === undefined)
+	{
+		return;
+	}
+	
+	var data, startRowData = CreateDataObject({column: current, down: current, up: current.up});
+	var previousData = startRowData;
+	
+	//insert happens here
+	startRowData.up.down = startRowData;
+	startRowData.down.up = startRowData;
+	current.size++;	
+	
+	for (var n = 1; n < nodes.length; n++)
+	{
+		node = nodes[n];
+		currentNode = CreateNode(node.row + row, node.column + column);		
+		current = FindColumnForNode(header, currentNode);
+		if (current === undefined)
+		{
+			return;
+		}
+		
+		data = CreateDataObject({column: current, down: current, up: current.up, left: previousData});
+		previousData.right = data;
+		previousData = data;
+		
+		//insert happens here
+		data.up.down = data;
+		data.down.up = data;
+		current.size++;
+	}
+	
+	startRowData.left = data;
+	data.right = startRowData;
 	
 }
 
-//TODO
-function AddNewRow(header, piece, row, column)
-{
-	
+function FindColumnForNode(header, node)
+{	
+	var current = header.right;
+	while(current != header)
+	{
+		if (AreNodesEqual(current.name, node))
+		{
+			return current;
+		}
+		current = current.right;
+	}
+	return undefined;	
 }
 
 
 // Constructors for algorithm elements
-function CreateDataObject(left, right, up, down, column)
+function CreateDataObject(obj)
 {
-	return {Left: left, Right:right, 
-		Up: up, Down: down, 
-		Column: column};
+	return {left: obj.left, right: obj.right, 
+		up: obj.up, down: obj.down, 
+		column: obj.column};
 }
 
-function CreateColumnObject(left, right, up, down, column, size, name)
+function CreateColumnObject(obj)
 {
-	return {Left: left, Right:right, 
-		Up: up, Down: down, 
-		Column: column, Size: size,
-		Name: name};
+	var s = (obj.size === undefined) ? 0 : obj.size; 
+	return {left: obj.left, right: obj.right, 
+		up: obj.up, down: obj.down, 
+		column: obj.column, size: s,
+		name: obj.name};
 }
 
-function CreateRootObject(left, right)
+function CreateRootObject(obj)
 {
-	return {Left: left, Right:right};
+	return {left: obj.left, right: obj.right};
 }
 
 
 // DLX algorithm
 function Search(header, solution, k)
 {
-	if (header.Right == header)
+	if (header.right == header)
 	{
+		if (isSolutionFound)
+		{
+			return;
+		}
+		isSolutionFound = true;
 		Print(solution);
 	}
 	else
 	{
 		var current = ChooseColumn(header);
+		//TODO
+		/*
+		var o = current.down;
+		var f = o.left;
+		var nodes = [];
+		while(o != f)
+		{
+			nodes.push(o.column.name);
+			o = o.right;
+		}
+		nodes.push(o.column.name);
+		CoverPieceInTable(nodes); 
+		*/
+		//for row
+	
 		CoverColumn(current);
-		var row = current.Down;
+		var row = current.down;
 		while(row != current)
 		{
 			solution[k] = row;
-			var j = row.Right;
+			/*
+			UncoverColumn(current);
+			var o = row;
+			var f = o.left;
+			var nodes = [];
+			while(o != f)
+			{
+				nodes.push(o.column.name);
+				o = o.right;
+			}
+			nodes.push(o.column.name);
+			
+			sleep(500);
+			CoverPieceInTable(nodes);			
+			CoverColumn(current);
+			*/
+			
+			var j = row.right;
 			while(j != row)
 			{
-				CoverColumn(j.Column);
-				j = j.Right;
+				CoverColumn(j.column);
+				j = j.right;
 			}
+			
+			
 			Search(header, solution, k + 1);
 			row = solution[k];
-			current = row.Column;
-			j = row.Left;
+			current = row.column;
+			j = row.left;
 			while (j != row)
 			{
-				UncoverColumn(j.Column);
-				j = j.Left;
+				UncoverColumn(j.column);
+				j = j.left;
 			}			
-			row = row.Down;
+			row = row.down;
+			/*if (!isSolutionFound)
+			{
+				sleep(500);
+				UncoverPieceInTable(nodes);			
+			}*/
 		}
 		UncoverColumn(current);
+		//UncoverPieceInTable(nodes);
 	}
 }
 
+function sleep(ms) 
+{
+	ms += new Date().getTime();
+	while (new Date() < ms)
+	{
+		
+	}
+} 
+
 function Print(solution)
 {
+	console.log('Solution(' + solution.length + ' pieces):');
 	for (var i = 0; i < solution.length; i++)
 	{
 		var o = solution[i];
-		var f = solution[i].Left;
+		var f = solution[i].left;
 		var str = '';
+		var nodes = [];
 		while(o != f)
 		{
-			str += o.Column.Name + '   '
-			o = o.Right;
+			nodes.push(o.column.name);
+			str += NodeToString(o.column.name) + '   '
+			o = o.right;
 		}
-		str += o.Column.Name;
+		nodes.push(o.column.name);
+		str += NodeToString(o.column.name);
+		CoverPieceInTable(nodes); 
 		console.log(str);
 	}
 }
 
+function CoverPieceInTable(nodes)
+{
+	var color = getRandomColor(); 
+	for (var i = 0; i < nodes.length; i++)
+	{
+		var row = nodes[i].row;
+		var column = nodes[i].column;
+		$('#td-' + row + '-' + column).css('backgroundColor', color);
+	}
+}
+
+function UncoverPieceInTable(nodes)
+{
+	for (var i = 0; i < nodes.length; i++)
+	{
+		var row = nodes[i].row;
+		var column = nodes[i].column;
+		$('#td-' + row + '-' + column).css('backgroundColor', '');
+	}
+}
+
+function getRandomColor()
+{
+	var letters = '0123456789ABCDEF'.split('');
+	var color = '#';
+	for (var i = 0; i < 6; i++)
+	{
+		color += letters[Math.floor(Math.random() * 16)];
+	}
+	if (color == '#000000' || color == '#FFFFFF')
+	{
+		return '#333333';
+	}
+	return color;
+}
+
 function ChooseColumn(header)
 {	
-	var j = header.Right;
+	var j = header.right;
 	var current = j;
-	var size = j.Size;
+	var size = j.size;
 	
 	while(j != header)
 	{
-		if (j.Size < size)
+		if (j.size < size)
 		{
 			current = j;
-			size = j.Size;
+			size = j.size;
 		}
-		j = j.Right;
+		j = j.right;
 	}
 	
 	return current;
@@ -499,45 +735,45 @@ function ChooseColumn(header)
 
 function CoverColumn(current)
 {
-	current.Right.Left = current.Left;
-	current.Left.Right = current.Right;
-	var i = current.Down;
+	current.right.left = current.left;
+	current.left.right = current.right;
+	var i = current.down;
 	while(i != current)
 	{
-		var j = i.Right;
+		var j = i.right;
 		while(j != i)
 		{
-			j.Down.Up = j.Up;
-			j.Up.Down = j.Down;
-			j.Column.Size--;
+			j.down.up = j.up;
+			j.up.down = j.down;
+			j.column.size--;
 			
-			j = j.Right;
+			j = j.right;
 		}
 		
-		i = i.Down;
+		i = i.down;
 	}
 	
 }
 
 function UncoverColumn(current)
 {
-	var i = current.Up;
+	var i = current.up;
 	while(i != current)
 	{
-		var j = i.Left;
+		var j = i.left;
 		while(j != i)
 		{
-			j.Column.Size++;
-			j.Down.Up = j;
-			j.Up.Down = j;
+			j.column.size++;
+			j.down.up = j;
+			j.up.down = j;
 			
-			j = j.Left;
+			j = j.left;
 		}
 		
-		i = i.Up;
+		i = i.up;
 	}
-	current.Right.Left = current;
-	current.Left.Right = current;
+	current.right.left = current;
+	current.left.right = current;
 }
 
 
@@ -552,16 +788,32 @@ $(document).ready(
 		//var solution = [];
 		//Search(header, solution, 0);
 		
+		$('#go').click(
+			function()
+			{
+				if ($('span.statisticSpan').children('.bad').length > 0)
+				{
+					alert("It's impossible to cover table with such number of empty cells!");
+					return;
+				}
+				isSolutionFound = false;
+				var arr = TransformTableToMatrix();		
+				var header = CreateXListForExactCoverProblem(arr);
+				var solution = [];
+				Search(header, solution, 0);
+				if (!isSolutionFound)
+				{
+					alert('There is no solution!');
+				}
+			}
+		);		
 		
-		/*var arr = TransformTableToMatrix();		
-		var header = CreateXListForExactCoverProblem(arr);
-		var solution = [];
-		Search(header, solution, 0);*/	
 		
 		
 		$(document).on('click', 'td.cell', 
 		function()
 			{
+				$(this).css('backgroundColor', '');
 				if ($(this).hasClass('empty-cell'))
 				{
 					$(this).removeClass('empty-cell').addClass('border-cell');
@@ -578,7 +830,7 @@ $(document).ready(
 		$("#resetBarrierCells").click(
 			function()
 			{
-				$(".polytable td").removeClass('border-cell').addClass('empty-cell');
+				$(".polytable td").removeClass('border-cell').addClass('empty-cell').css('backgroundColor', '');;
 				CountStatistic();
 			}
 		);	
