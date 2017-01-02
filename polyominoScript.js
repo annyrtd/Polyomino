@@ -1,47 +1,89 @@
 var numberOfRows, numberOfColumns;
 /*var pieces = [
-				CreatePiece([
+				createPiece([
 					[0,0],[0,1],[0,2]
 				]),
-				CreatePiece([
+				createPiece([
 					[0,0],[1,0],[2,0]
 				]),
-				CreatePiece([
+				createPiece([
 					[0,0],[0,1],[1,0]
 				]),
-				CreatePiece([
+				createPiece([
 					[0,0],[0,1],[1,1]
 				]),
-				CreatePiece([
+				createPiece([
 					[0,0],[1,0],[1,1]
 				]),
-				CreatePiece([
+				createPiece([
 					[0,1],[1,0],[1,1]
 				])
 			];
 */		
 var pieces = [
 				CreatePiece([
+					[0,0],[1,0],[1,1],[2,0]
+				]),
+				
+				
+				CreatePiece([
+					[0,0],[0,1],[1,0],[2,0]
+				]),
+				CreatePiece([
+					[0,1],[0,2],[1,0],[1,1]
+				]),
+				
+				
+				CreatePiece([
+					[0,0],[0,1],[0,2],[1,2]
+				]),
+				CreatePiece([
+					[0,0],[1,0],[1,1],[2,1]
+				]),	
+				
+				
+				CreatePiece([
+					[0,0],[1,0],[1,1],[1,2]
+				]),
+				CreatePiece([
+					[0,0],[0,1],[1,1],[1,2]
+				]),
+				
+				
+				CreatePiece([
+					[0,1],[1,1],[2,0],[2,1]
+				]),
+				CreatePiece([
+					[0,1],[1,0],[1,1],[2,0]
+				]),
+				
+				
+				CreatePiece([
 					[0,0],[0,1],[0,2],[0,3]
 				]),
 				CreatePiece([
 					[0,0],[1,0],[2,0],[3,0]
 				]),
-				CreatePiece([
-					[0,0],[0,1],[1,0],[2,0]
-				]),
-				CreatePiece([
-					[0,0],[0,1],[0,2],[1,2]
-				]),
-				CreatePiece([
-					[0,0],[1,0],[1,1],[1,2]
-				]),
-				CreatePiece([
-					[0,1],[1,1],[2,0],[2,1]
-				])
 			];	
 var piecesLength = [4]; 
 var isSolutionFound = false;
+
+// algo: https://en.wikipedia.org/wiki/Fisher-Yates_shuffle
+function ShufflePieces() 
+{
+  var currentIndex = pieces.length, randomIndex;
+
+  // While there remain elements to shuffle...
+  while (0 !== currentIndex) {
+
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+
+    // And swap it with the current element.
+	[pieces[currentIndex], pieces[randomIndex]] = [pieces[randomIndex], pieces[currentIndex]];
+  }
+}
 
 
 function SetInitialPolynomioTable()
@@ -72,7 +114,7 @@ function CountStatistic()
 	while(!isAllVisited(arr))
 	{
 		startNode = GetStartNode(arr);
-		size.push(1 + CountOneComponent(startNode, arr));
+		size[size.length] = 1 + CountOneComponent(startNode, arr);
 	}
 	
 	for (var s = 0, temp; s < size.length; s++)
@@ -120,7 +162,7 @@ function TransformTableToMatrix()
 	$("table.polytable tr.field-row").each(
 		function(row)
 		{
-			arr.push([]);
+			arr[arr.length] = [];
 			$(this).children('td.cell').each(
 				function()
 				{
@@ -129,7 +171,7 @@ function TransformTableToMatrix()
 					{
 						item = 1;
 					}
-					arr[row].push(item);
+					arr[row][arr[row].length] = item;
 				}
 			);
 		}
@@ -181,7 +223,7 @@ function NodeToString(node)
 	return node.row + ',' + node.column;
 }
 
-//example: 1,1
+//example: "1,1"
 function StringToNode(str)
 {
 	var position = str.indexOf(',');
@@ -220,15 +262,15 @@ function GetNeighbours(node, arr)
 {
 	var neighbours = [];
 	// connect diagonal cells
-	//neighbours.push(CreateNode(node.row - 1, node.column - 1));	
-	//neighbours.push(CreateNode(node.row - 1, node.column + 1));
-	//neighbours.push(CreateNode(node.row + 1, node.column - 1));	
-	//neighbours.push(CreateNode(node.row + 1, node.column + 1));
+	//neighbours[neighbours.length] = createNode(node.row - 1, node.column - 1);
+	//neighbours[neighbours.length] = createNode(node.row - 1, node.column + 1);
+	//neighbours[neighbours.length] = createNode(node.row + 1, node.column - 1);
+	//neighbours[neighbours.length] = createNode(node.row + 1, node.column + 1);
 	
-	neighbours.push(CreateNode(node.row - 1, node.column));
-	neighbours.push(CreateNode(node.row, node.column - 1));	
-	neighbours.push(CreateNode(node.row, node.column + 1));	
-	neighbours.push(CreateNode(node.row + 1, node.column));	
+	neighbours[neighbours.length] = CreateNode(node.row - 1, node.column);
+	neighbours[neighbours.length] = CreateNode(node.row, node.column - 1);	
+	neighbours[neighbours.length] = CreateNode(node.row, node.column + 1);	
+	neighbours[neighbours.length] = CreateNode(node.row + 1, node.column);	
 	
 	for (var i = 0; i < neighbours.length; i++)
 	{
@@ -254,12 +296,12 @@ function CheckIfProperNumber(number)
 {
 	for (var i = 0; i < piecesLength.length; i++)
 	{
-		if (number % piecesLength[i] != 0)
+		if (number % piecesLength[i] == 0)
 		{
-			return false;
+			return true;
 		}
 	}
-	return true;
+	return false;
 }
 
 // Transform table
@@ -407,7 +449,7 @@ function CreatePiece(coordinates)
 	var _maxcol = coordinates[0][1];
 	for (var i = 0; i < coordinates.length; i++)
 	{
-		_nodes.push(CreateNode(coordinates[i][0], coordinates[i][1]));
+		_nodes[_nodes.length] = CreateNode(coordinates[i][0], coordinates[i][1]);
 		if(coordinates[i][0] > _maxrow)
 		{
 			_maxrow = coordinates[i][0];
@@ -423,7 +465,6 @@ function CreatePiece(coordinates)
 
 function CreateXListForExactCoverProblem(arr)
 {	
-	//create initial Xlist with header and empty columns
 	var header = CreateInitialXList(arr);
 	for(var p = 0, piece, nodes; p < pieces.length; p++)
 	{
@@ -433,16 +474,7 @@ function CreateXListForExactCoverProblem(arr)
 		{
 			for (var j = 0; j + piece.maxcol < arr[i].length; j++)
 			{
-				var isMatch = true;
-				for (var k = 0; k < nodes.length; k++)
-				{
-					if (arr[i + nodes[k].row][j + nodes[k].column] == 1)
-					{
-						isMatch = false;
-						break;
-					}
-				}
-				if (isMatch)
+				if (isMatch(arr, nodes, i, j))
 				{
 					AddNewRow(header, nodes, i, j);
 				}
@@ -453,7 +485,6 @@ function CreateXListForExactCoverProblem(arr)
 	return header;
 }
 
-//TODO
 //create initial Xlist with header and empty columns
 function CreateInitialXList(arr)
 {
@@ -466,7 +497,7 @@ function CreateInitialXList(arr)
 		{
 			if (arr[i][j] == 0)
 			{
-				// do I need NodeToString and StringToNode???
+				// do I need nodeToString and stringToNode???
 				node = CreateNode(i,j);
 				currentColumn = CreateColumnObject({left: previousColumn, name: node});
 				currentColumn.up = currentColumn;
@@ -482,50 +513,56 @@ function CreateInitialXList(arr)
 	return header;
 }
 
+function isMatch(arr, nodes, i, j)
+{
+	for (var k = 0; k < nodes.length; k++)
+	{
+		if (arr[i + nodes[k].row][j + nodes[k].column] == 1)
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
 //TODO nodes should be sorted in a right order
 function AddNewRow(header, nodes, row, column)
 {
 	var node = nodes[0];
 	var currentNode = CreateNode(node.row + row, node.column + column);	
 	
-	// current - текушая колонка, в которую надо вставить узел
+	var data, startRowData = AddNewDataObject(header, currentNode);
+	var previousData = startRowData;	
+	
+	for (var n = 1; n < nodes.length; n++)
+	{
+		node = nodes[n];
+		currentNode = CreateNode(node.row + row, node.column + column);		
+		data = AddNewDataObject(header, currentNode, previousData);
+		previousData.right = data;
+		previousData = data;
+	}
+	
+	startRowData.left = data;
+	data.right = startRowData;
+	
+}
+
+function AddNewDataObject(header, currentNode, previousData)
+{	
 	var current = FindColumnForNode(header, currentNode);
 	if (current === undefined)
 	{
 		return;
 	}
 	
-	var data, startRowData = CreateDataObject({column: current, down: current, up: current.up});
-	var previousData = startRowData;
+	var data = CreateDataObject({column: current, down: current, up: current.up, left: previousData});
 	
-	//insert happens here
-	startRowData.up.down = startRowData;
-	startRowData.down.up = startRowData;
+	data.up.down = data;
+	data.down.up = data;
 	current.size++;	
 	
-	for (var n = 1; n < nodes.length; n++)
-	{
-		node = nodes[n];
-		currentNode = CreateNode(node.row + row, node.column + column);		
-		current = FindColumnForNode(header, currentNode);
-		if (current === undefined)
-		{
-			return;
-		}
-		
-		data = CreateDataObject({column: current, down: current, up: current.up, left: previousData});
-		previousData.right = data;
-		previousData = data;
-		
-		//insert happens here
-		data.up.down = data;
-		data.down.up = data;
-		current.size++;
-	}
-	
-	startRowData.left = data;
-	data.right = startRowData;
-	
+	return data;
 }
 
 function FindColumnForNode(header, node)
@@ -588,11 +625,11 @@ function Search(header, solution, k)
 		var nodes = [];
 		while(o != f)
 		{
-			nodes.push(o.column.name);
+			nodes[nodes.length] = o.column.name;
 			o = o.right;
 		}
-		nodes.push(o.column.name);
-		CoverPieceInTable(nodes); 
+		nodes[nodes.length] = o.column.name;
+		coverPieceInTable(nodes);
 		*/
 		//for row
 	
@@ -602,20 +639,20 @@ function Search(header, solution, k)
 		{
 			solution[k] = row;
 			/*
-			UncoverColumn(current);
+			uncoverColumn(current);
 			var o = row;
 			var f = o.left;
 			var nodes = [];
 			while(o != f)
 			{
-				nodes.push(o.column.name);
+				nodes[nodes.length] = o.column.name;
 				o = o.right;
 			}
-			nodes.push(o.column.name);
+			nodes[nodes.length] = o.column.name;
 			
 			sleep(500);
-			CoverPieceInTable(nodes);			
-			CoverColumn(current);
+			coverPieceInTable(nodes);
+			coverColumn(current);
 			*/
 			
 			var j = row.right;
@@ -639,11 +676,11 @@ function Search(header, solution, k)
 			/*if (!isSolutionFound)
 			{
 				sleep(500);
-				UncoverPieceInTable(nodes);			
+				uncoverPieceInTable(nodes);
 			}*/
 		}
 		UncoverColumn(current);
-		//UncoverPieceInTable(nodes);
+		//uncoverPieceInTable(nodes);
 	}
 }
 
@@ -667,11 +704,11 @@ function Print(solution)
 		var nodes = [];
 		while(o != f)
 		{
-			nodes.push(o.column.name);
+			nodes[nodes.length] = o.column.name;
 			str += NodeToString(o.column.name) + '   '
 			o = o.right;
 		}
-		nodes.push(o.column.name);
+		nodes[nodes.length] = o.column.name;
 		str += NodeToString(o.column.name);
 		CoverPieceInTable(nodes); 
 		console.log(str);
@@ -784,13 +821,14 @@ $(document).ready(
 		SetInitialPolynomioTable();
 		CountStatistic();
 		
-		//var header = Test_GetMatrixForExactCoverProblem();
+		//var header = test_getMatrixForExactCoverProblem();
 		//var solution = [];
-		//Search(header, solution, 0);
+		//search(header, solution, 0);
 		
 		$('#go').click(
 			function()
 			{
+				ShufflePieces();
 				if ($('span.statisticSpan').children('.bad').length > 0)
 				{
 					alert("It's impossible to cover table with such number of empty cells!");
@@ -813,7 +851,8 @@ $(document).ready(
 		$(document).on('click', 'td.cell', 
 		function()
 			{
-				$(this).css('backgroundColor', '');
+				$('td.cell').css('backgroundColor', '');
+				//$(this).css('backgroundColor', '');
 				if ($(this).hasClass('empty-cell'))
 				{
 					$(this).removeClass('empty-cell').addClass('border-cell');
