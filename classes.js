@@ -31,9 +31,9 @@ class Node {
     }
     //example: "1,1"
     static fromString(str) {
-        var position = str.indexOf(',');
-        var row = str.substr(0, position);
-        var column = str.substr(position + 1);
+        let position = str.indexOf(',');
+        let row = str.substr(0, position);
+        let column = str.substr(position + 1);
         return new Node(row, column);
     }
     toString() {
@@ -42,13 +42,18 @@ class Node {
     equalsTo(node) {
         return (this.row == node.row) && (this.column == node.column);
     }
+    toArray() {
+        return [this.row, this.column];
+    }
 }
 
 class Piece {
     constructor(coordinates) {
         let nodes = [];
         let maxrow = coordinates[0][0];
+        let minrow = coordinates[0][0];
         let maxcol = coordinates[0][1];
+        let mincol = coordinates[0][1];
         for (let i = 0; i < coordinates.length; i++) {
             nodes.push(new Node(coordinates[i][0], coordinates[i][1]));
             if (coordinates[i][0] > maxrow) {
@@ -57,11 +62,46 @@ class Piece {
             if (coordinates[i][1] > maxcol) {
                 maxcol = coordinates[i][1];
             }
+
+            if (coordinates[i][0] < minrow) {
+                minrow = coordinates[i][0];
+            }
+            if (coordinates[i][1] < mincol) {
+                mincol = coordinates[i][1];
+            }
         }
 
         this.nodes = nodes;
         this.maxrow = maxrow;
+        this.minrow = minrow;
         this.maxcol = maxcol;
+        this.mincol = mincol;
+    }
+    getView() {
+        let tbody = document.createElement('tbody');
+        let table = document.createElement('table');
+        let color = getRandomColor();
+
+        for (let i = this.minrow; i <= this.maxrow; i++) {
+            let tr = document.createElement('tr');
+            for (let j = this.mincol; j <= this.maxcol; j++) {
+                let td = document.createElement('td');
+                tr.appendChild(td)
+            }
+            tbody.appendChild(tr);
+        }
+
+        this.nodes.forEach(node => {
+           let cell = tbody
+               .children[node.row - this.minrow]
+               .children[node.column - this.mincol];
+           cell.style.backgroundColor = color;
+           cell.style.border = '1px solid black';
+        });
+
+        table.setAttribute('data-nodes', this.nodes.map(item => new Node(item.row - this.minrow, item.column - this.mincol).toString()).join('-'));
+        table.appendChild(tbody);
+        return table;
     }
 }
 

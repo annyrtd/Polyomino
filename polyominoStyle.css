@@ -126,3 +126,33 @@
 {
 	color: red;
 }
+
+.solutionPieces {
+	display: flex;
+	width: 50%;
+	flex-wrap: wrap;
+}
+
+.solutionPieces table{
+	border-collapse: collapse;
+	margin: 4px;
+}
+
+.solutionPieces td{
+	width: 32px;
+	height: 32px;
+}
+
+.solutionArea {
+	display: flex;
+}
+
+.over {
+	border: 2px dashed #000;
+}
+
+.game {
+	border: 1px black solid;
+	width: 280px;
+	height: 280px;
+}

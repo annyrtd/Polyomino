@@ -1,85 +1,84 @@
-var numberOfRows, numberOfColumns;
-/*var pieces = [
- new Piece([
- [0,0],[0,1],[0,2]
- ]),
- new Piece([
- [0,0],[1,0],[2,0]
- ]),
- new Piece([
- [0,0],[0,1],[1,0]
- ]),
- new Piece([
- [0,0],[0,1],[1,1]
- ]),
- new Piece([
- [0,0],[1,0],[1,1]
- ]),
- new Piece([
- [0,1],[1,0],[1,1]
- ])
- ];
- */
-var pieces = [
+let numberOfRows, numberOfColumns;
+/*const oldPieces = [
     new Piece([
-        [0,0],[1,0],[1,1],[2,0]
+        [0, 0], [0, 1], [0, 2]
     ]),
     new Piece([
-        [0,0],[0,1],[0,2],[1,1]
+        [0, 0], [1, 0], [2, 0]
     ]),
     new Piece([
-        [0,1],[1,0],[1,1],[1,2]
+        [0, 0], [0, 1], [1, 0]
     ]),
     new Piece([
-        [0,1],[1,0],[1,1],[2,1]
-    ]),
-
-
-    new Piece([
-        [0,0],[0,1],[1,0],[2,0]
+        [0, 0], [0, 1], [1, 1]
     ]),
     new Piece([
-        [0,1],[0,2],[1,0],[1,1]
+        [0, 0], [1, 0], [1, 1]
+    ]),
+    new Piece([
+        [0, 1], [1, 0], [1, 1]
+    ])
+];*/
+const pieces = [
+    new Piece([
+        [0, 0], [1, 0], [1, 1], [2, 0]
+    ]),
+    new Piece([
+        [0, 0], [0, 1], [0, 2], [1, 1]
+    ]),
+    new Piece([
+        [0, 1], [1, 0], [1, 1], [1, 2]
+    ]),
+    new Piece([
+        [0, 1], [1, 0], [1, 1], [2, 1]
     ]),
 
 
     new Piece([
-        [0,0],[0,1],[0,2],[1,2]
+        [0, 0], [0, 1], [1, 0], [2, 0]
     ]),
     new Piece([
-        [0,0],[1,0],[1,1],[2,1]
-    ]),
-
-
-    new Piece([
-        [0,0],[1,0],[1,1],[1,2]
-    ]),
-    new Piece([
-        [0,0],[0,1],[1,1],[1,2]
+        [0, 1], [0, 2], [1, 0], [1, 1]
     ]),
 
 
     new Piece([
-        [0,1],[1,1],[2,0],[2,1]
+        [0, 0], [0, 1], [0, 2], [1, 2]
     ]),
     new Piece([
-        [0,1],[1,0],[1,1],[2,0]
+        [0, 0], [1, 0], [1, 1], [2, 1]
     ]),
 
 
     new Piece([
-        [0,0],[0,1],[0,2],[0,3]
+        [0, 0], [1, 0], [1, 1], [1, 2]
     ]),
     new Piece([
-        [0,0],[1,0],[2,0],[3,0]
+        [0, 0], [0, 1], [1, 1], [1, 2]
+    ]),
+
+
+    new Piece([
+        [0, 1], [1, 1], [2, 0], [2, 1]
+    ]),
+    new Piece([
+        [0, 1], [1, 0], [1, 1], [2, 0]
+    ]),
+
+
+    new Piece([
+        [0, 0], [0, 1], [0, 2], [0, 3]
+    ]),
+    new Piece([
+        [0, 0], [1, 0], [2, 0], [3, 0]
     ]),
 ];
-var piecesLength = [4];
-var isSolutionFound = false;
+const piecesLength = [4];
+//var isSolutionFound = false;
 
 // algo: https://en.wikipedia.org/wiki/Fisher-Yates_shuffle
 function shufflePieces() {
-    var currentIndex = pieces.length, randomIndex;
+    let currentIndex = pieces.length, randomIndex;
 
     // While there remain elements to shuffle...
     while (0 !== currentIndex) {
@@ -93,32 +92,30 @@ function shufflePieces() {
     }
 }
 
-function setInitialPolynomioTable() {
+function setInitialPolyminoTable() {
     numberOfRows = 8;
     numberOfColumns = 8;
-    for (var i = 0; i < 8; i++) {
-        var row = $("<tr class='field-row' id='tr-" + i + "'></tr>")
-        for (var j = 0; j < 8; j++) {
-            row.append($("<td class='cell empty-cell' id='td-"
-                + i + "-"
-                + j + "'></td>"));
+    for (let i = 0; i < 8; i++) {
+        const row = $(`<tr class='field-row' id='tr-${i}'></tr>`);
+        for (let j = 0; j < 8; j++) {
+            row.append($(`<td class='cell empty-cell' id='td-${i}-${j}'></td>`));
         }
-        $("table.polytable").append(row);
+        $('table.polytable').append(row);
     }
 
-    $("#td-3-3, #td-3-4, #td-4-3, #td-4-4").removeClass('empty-cell').addClass('border-cell');
+    $('#td-3-3, #td-3-4, #td-4-3, #td-4-4').removeClass('empty-cell').addClass('border-cell');
 }
 
 // Counting connected components in a table
 function countStatistic() {
-    var arr = transformTableToMatrix();
-    var startNode, size = [];
+    const arr = transformTableToMatrix();
+    let startNode, size = [];
     while (!isAllVisited(arr)) {
         startNode = getStartNode(arr);
         size[size.length] = 1 + countOneComponent(startNode, arr);
     }
 
-    for (var s = 0, temp; s < size.length; s++) {
+    for (let s = 0, temp; s < size.length; s++) {
         //TODO: add proper check if number of empty cells can be divided by pieces
         if (checkIfProperNumber(size[s])) {
             temp = '<span class="good">' + size[s] + '</span>';
@@ -130,7 +127,7 @@ function countStatistic() {
     }
 
 
-    var txt = "";
+    let txt = '';
     if (size.length <= 0) {
         txt = '0';
     }
@@ -139,7 +136,7 @@ function countStatistic() {
             txt = size[0];
         }
         else {
-            for (var i = 0; i < size.length - 1; i++) {
+            for (let i = 0; i < size.length - 1; i++) {
                 txt += size[i] + ' + ';
             }
             txt += size[size.length - 1] + ' = ' + $(".empty-cell").length.toString();
@@ -150,13 +147,14 @@ function countStatistic() {
 }
 
 function transformTableToMatrix() {
-    var arr = [];
+    const arr = [];
     $("table.polytable tr.field-row").each(
         function (row) {
             arr[arr.length] = [];
+            //noinspection JSValidateTypes
             $(this).children('td.cell').each(
                 function () {
-                    var item = 0;
+                    let item = 0;
                     if ($(this).hasClass('border-cell')) {
                         item = 1;
                     }
@@ -169,8 +167,8 @@ function transformTableToMatrix() {
 }
 
 function isAllVisited(arr) {
-    for (var i = 0; i < arr.length; i++) {
-        for (var j = 0; j < arr[i].length; j++) {
+    for (let i = 0; i < arr.length; i++) {
+        for (let j = 0; j < arr[i].length; j++) {
             if (arr[i][j] == 0) {
                 return false;
             }
@@ -180,8 +178,8 @@ function isAllVisited(arr) {
 }
 
 function getStartNode(arr) {
-    for (var i = 0; i < arr.length; i++) {
-        for (var j = 0; j < arr[i].length; j++) {
+    for (let i = 0; i < arr.length; i++) {
+        for (let j = 0; j < arr[i].length; j++) {
             if (arr[i][j] == 0) {
                 return new Node(i, j);
             }
@@ -189,7 +187,7 @@ function getStartNode(arr) {
     }
 }
 
-function areNodesEqual(node1, node2) {
+/*function areNodesEqual(node1, node2) {
     return (node1.row == node2.row) && (node1.column == node2.column);
 }
 
@@ -205,22 +203,22 @@ function stringToNode(str) {
     return new Node(row, column);
 
 }
-
+*/
 function countOneComponent(startNode, arr) {
-    var size = 0;
+    let size = 0;
     arr[startNode.row][startNode.column] = 1;
-    var neighbours = getNeighbours(startNode, arr);
+    const neighbours = getNeighbours(startNode, arr);
 
     if (neighbours.length == 0) {
         return 0;
     }
 
-    for (var t = 0; t < neighbours.length; t++) {
+    for (let t = 0; t < neighbours.length; t++) {
         arr[neighbours[t].row][neighbours[t].column] = 1;
         size++;
     }
 
-    for (var i = 0; i < neighbours.length; i++) {
+    for (let i = 0; i < neighbours.length; i++) {
         size += countOneComponent(neighbours[i], arr);
     }
 
@@ -228,7 +226,7 @@ function countOneComponent(startNode, arr) {
 }
 
 function getNeighbours(node, arr) {
-    var neighbours = [];
+    const neighbours = [];
     // connect diagonal cells
     //neighbours[neighbours.length] = new Node(node.row - 1, node.column - 1);
     //neighbours[neighbours.length] = new Node(node.row - 1, node.column + 1);
@@ -240,14 +238,14 @@ function getNeighbours(node, arr) {
     neighbours[neighbours.length] = new Node(node.row, node.column + 1);
     neighbours[neighbours.length] = new Node(node.row + 1, node.column);
 
-    for (var i = 0; i < neighbours.length; i++) {
+    for (let i = 0; i < neighbours.length; i++) {
         if (neighbours[i].row < 0 || neighbours[i].column < 0
             || neighbours[i].row >= arr.length || neighbours[i].column >= arr[0].length
             || arr[neighbours[i].row][neighbours[i].column] == 1) {
             neighbours[i] = undefined;
         }
     }
-    var position = neighbours.indexOf(undefined);
+    let position = neighbours.indexOf(undefined);
     while (position > -1) {
         neighbours.splice(position, 1);
         position = neighbours.indexOf(undefined);
@@ -258,7 +256,7 @@ function getNeighbours(node, arr) {
 
 //TODO
 function checkIfProperNumber(number) {
-    for (var i = 0; i < piecesLength.length; i++) {
+    for (let i = 0; i < piecesLength.length; i++) {
         if (number % piecesLength[i] == 0) {
             return true;
         }
@@ -279,8 +277,8 @@ function addColumn() {
 }
 
 function addRow() {
-    var row = $('<tr class="field-row" id="tr-' + numberOfRows + '"></tr>');
-    for (var i = 0; i < numberOfColumns; i++) {
+    const row = $('<tr class="field-row" id="tr-' + numberOfRows + '"></tr>');
+    for (let i = 0; i < numberOfColumns; i++) {
         row.append($("<td class='cell empty-cell' id='td-"
             + numberOfRows + "-"
             + i + "'></td>"));
@@ -295,7 +293,8 @@ function removeColumn() {
         return;
     }
     $('tr.field-row').each(
-        function (row) {
+        function () {
+            //noinspection JSValidateTypes
             $(this).children('td.cell').last().remove();
         }
     );
@@ -311,7 +310,7 @@ function removeRow() {
 }
 
 // test
-function test_getMatrixForExactCoverProblem() {
+/*function test_getMatrixForExactCoverProblem() {
     var header = new RootObject({});
 
     var columnA = new ColumnObject({size: 2, name: 'A'});
@@ -385,16 +384,16 @@ function test_getMatrixForExactCoverProblem() {
     itemD4.down = columnD;
 
     return header;
-}
+}*/
 
 // Prepare for DLX
 function createXListForExactCoverProblem(arr) {
-    var header = createInitialXList(arr);
-    for (var p = 0, piece, nodes; p < pieces.length; p++) {
+    const header = createInitialXList(arr);
+    for (let p = 0, piece, nodes; p < pieces.length; p++) {
         piece = pieces[p];
         nodes = piece.nodes;
-        for (var i = 0; i + piece.maxrow < arr.length; i++) {
-            for (var j = 0; j + piece.maxcol < arr[i].length; j++) {
+        for (let i = 0; i + piece.maxrow < arr.length; i++) {
+            for (let j = 0; j + piece.maxcol < arr[i].length; j++) {
                 if (isMatch(arr, nodes, i, j)) {
                     addNewRow(header, nodes, i, j);
                 }
@@ -407,11 +406,11 @@ function createXListForExactCoverProblem(arr) {
 
 //create initial Xlist with header and empty columns
 function createInitialXList(arr) {
-    var header = new RootObject({});
-    var previousColumn = header;
-    var currentColumn, node;
-    for (var i = 0; i < arr.length; i++) {
-        for (var j = 0; j < arr[i].length; j++) {
+    const header = new RootObject({});
+    let previousColumn = header;
+    let currentColumn, node;
+    for (let i = 0; i < arr.length; i++) {
+        for (let j = 0; j < arr[i].length; j++) {
             if (arr[i][j] == 0) {
                 // do I need nodeToString and stringToNode???
                 node = new Node(i, j);
@@ -430,7 +429,7 @@ function createInitialXList(arr) {
 }
 
 function isMatch(arr, nodes, i, j) {
-    for (var k = 0; k < nodes.length; k++) {
+    for (let k = 0; k < nodes.length; k++) {
         if (arr[i + nodes[k].row][j + nodes[k].column] == 1) {
             return false;
         }
@@ -440,13 +439,13 @@ function isMatch(arr, nodes, i, j) {
 
 //TODO nodes should be sorted in a right order
 function addNewRow(header, nodes, row, column) {
-    var node = nodes[0];
-    var currentNode = new Node(node.row + row, node.column + column);
+    let node = nodes[0];
+    let currentNode = new Node(node.row + row, node.column + column);
 
-    var data, startRowData = addNewDataObject(header, currentNode);
-    var previousData = startRowData;
+    let data, startRowData = addNewDataObject(header, currentNode);
+    let previousData = startRowData;
 
-    for (var n = 1; n < nodes.length; n++) {
+    for (let n = 1; n < nodes.length; n++) {
         node = nodes[n];
         currentNode = new Node(node.row + row, node.column + column);
         data = addNewDataObject(header, currentNode, previousData);
@@ -459,12 +458,12 @@ function addNewRow(header, nodes, row, column) {
 }
 
 function addNewDataObject(header, currentNode, previousData) {
-    var current = findColumnForNode(header, currentNode);
+    const current = findColumnForNode(header, currentNode);
     if (current === undefined) {
         return;
     }
 
-    var data = new DataObject({column: current, down: current, up: current.up, left: previousData});
+    const data = new DataObject({column: current, down: current, up: current.up, left: previousData});
 
     data.up.down = data;
     data.down.up = data;
@@ -474,9 +473,9 @@ function addNewDataObject(header, currentNode, previousData) {
 }
 
 function findColumnForNode(header, node) {
-    var current = header.right;
+    let current = header.right;
     while (current != header) {
-        if (areNodesEqual(current.name, node)) {
+        if (current.name.equalsTo(node)) {
             return current;
         }
         current = current.right;
@@ -670,24 +669,25 @@ function uncoverColumn(current) {
 
 $(document).ready(
     function() {
-        setInitialPolynomioTable();
+        setInitialPolyminoTable();
         countStatistic();
 
-        //var header = test_getMatrixForExactCoverProblem();
-        //var solution = [];
-        //search(header, solution, 0);
+        /*var header = test_getMatrixForExactCoverProblem();
+        var solution = [];
+        search(header, solution, 0);*/
 
         $('#go').click(
             function () {
                 shufflePieces();
+                //noinspection JSValidateTypes
                 if ($('span.statisticSpan').children('.bad').length > 0) {
                     alert("It's impossible to cover table with such number of empty cells!");
                     return;
                 }
-                var arr = transformTableToMatrix();
-                var header = createXListForExactCoverProblem(arr);
-                var isSolutionFound = findSolution(header);
-                if (!isSolutionFound) {
+                const arr = transformTableToMatrix();
+                const header = createXListForExactCoverProblem(arr);
+                let isFound = findSolution(header);
+                if (!isFound) {
                     alert('There is no solution!');
                 }
             }
@@ -712,14 +712,13 @@ $(document).ready(
         $("#resetBarrierCells").click(
             function () {
                 $(".polytable td").removeClass('border-cell').addClass('empty-cell').css('backgroundColor', '');
-                ;
                 countStatistic();
             }
         );
 
         $('div.arrow-div').click(
             function () {
-                var direction = $(this).removeClass('arrow-div').attr('class').replace('arrow-', '');
+                const direction = $(this).removeClass('arrow-div').attr('class').replace('arrow-', '');
 
                 switch (direction) {
                     case 'left':
@@ -740,5 +739,113 @@ $(document).ready(
                 countStatistic();
             }
         );
+
+
+        let effect = 'move',
+//            format = 'Text',
+            dz = document.querySelector('.polytable');
+        //var dz = document.querySelector('.game');
+
+        EventUtil.addHandler(dz, 'dragenter', function(/*e*/) {
+
+            //let target = EventUtil.getCurrentTarget(e);
+            //target.style.backgroundColor = 'orange';
+            return false;
+        });
+
+        let previousRow = -10;
+        let previousCol = -10;
+        let isPieceSet = false;
+
+        EventUtil.addHandler(dz, 'dragover', function(e) {
+            let offset = $(this).offset();
+            let containerX = e.pageX - offset.left;
+            let containerY = e.pageY - offset.top;
+            let row = Math.round((containerY - currentY) / 35);
+            let column = Math.round((containerX - currentX) / 35);
+
+            if (previousCol != column || previousRow != row || !isPieceSet) {
+                isPieceSet = true;
+                previousRow = row;
+                previousCol = column;
+                $('td.cell')
+                    .not('.set')
+                    .not('.border-cell')
+                    .css('backgroundColor', '');
+
+                currentPieceTdCoordinates.every((item) => {
+                    /*let cell = document.getElementById(`td-${parseInt(item.row) + row}-${parseInt(item.column) + column}`);
+                     cell.style.backgroundColor = currentColor;*/
+
+                    let tdRow = parseInt(item.row) + row;
+                    let tdCol = parseInt(item.column) + column;
+                    let cell = $(`#td-${tdRow}-${tdCol}`)
+                        .not('.set').not('.border-cell');
+
+                    if (cell.length > 0) {
+                        cell.css('backgroundColor', currentColor);
+                    } else {
+                        $('td.cell')
+                            .not('.set')
+                            .not('.border-cell')
+                            .css('backgroundColor', '');
+                        isPieceSet = false;
+                        return false;
+                    }
+
+                    return true;
+                });
+            }
+
+
+            console.log(row, column);
+
+            EventUtil.preventDefault(e);
+
+            //noinspection JSUnresolvedVariable
+            e.dataTransfer.dropEffect = effect;
+
+            return false;
+        });
+
+        EventUtil.addHandler(dz, 'dragleave', function(/*e*/) {
+            //const target = EventUtil.getCurrentTarget(e);
+            $('td.cell').not('.set').css('backgroundColor', '');
+            isPieceSet = false;
+            //target.style.backgroundColor = '';
+            return false;
+        });
+
+        EventUtil.addHandler(dz, 'drop', function(e) {
+            EventUtil.preventDefault(e);
+            /*var currentTarget = EventUtil.getCurrentTarget(e),
+                DragMeId = e.dataTransfer.getData(format),
+                DragMe = document.getElementById(DragMeId);
+
+            currentTarget.appendChild(DragMe);*/
+            /*var target = EventUtil.getCurrentTarget(e);
+            target.style.backgroundColor = '';*/
+            /*let offset = $(this).offset();
+            //or $(this).parent().offset(); if you really just want the current element's offset
+            let containerX = e.pageX - offset.left;
+            let containerY = e.pageY - offset.top;
+            let row = Math.round((containerY - currentY) / 35);
+            let column = Math.round((containerX - currentX) / 35);*/
+
+            if (isPieceSet) {
+                draggableElement.parentNode.removeChild(draggableElement);
+                currentPieceTdCoordinates.forEach((item) => {
+                    /*let cell = document.getElementById(`td-${parseInt(item.row) + row}-${parseInt(item.column) + column}`);
+                     cell.style.backgroundColor = currentColor;*/
+                    let tdRow = parseInt(item.row) + previousRow;
+                    let tdCol = parseInt(item.column) + previousCol;
+
+                    let cell = $(`#td-${tdRow}-${tdCol}`);
+                    cell.addClass('set');
+                    //cell.attr('data-nodes', currentCoordinatesAttribute);
+                });
+            }
+            return false;
+        });
     }
 );
