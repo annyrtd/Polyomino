@@ -420,9 +420,13 @@ $(document).ready(
         );
 
         $('#give-up').click(function(){
-            $('.piece').remove();
             stepOfInterval = 0;
-            solutionPieces.forEach(piece => setTimeoutForCoveringPiece(piece));
+            $('.piece').each(function() {
+                let index = parseInt($(this).attr('id').replace('piece', ''));
+                setTimeoutForCoveringPiece(solutionPieces[index], $(this));
+            });
+            /*$('.piece').remove();
+            solutionPieces.forEach(piece => setTimeoutForCoveringPiece(piece));*/
             $(this).hide();
         });
 

@@ -1,7 +1,7 @@
 'use strict';
 
 let isSolutionFound = false;
-const interval = 20;
+const interval = 200;
 let stepOfInterval = 0;
 let currentPieceTdCoordinates;
 let currentCoordinatesAttribute;
@@ -29,9 +29,10 @@ function startGame(header) {
 
     const solutionArea = $('div.solutionArea');
     solutionPieces = print(solution);
-    solutionPieces.forEach(piece => {
+    solutionPieces.forEach((piece, index) => {
         let view = piece.getView();
         solutionArea.append(view);
+        view.setAttribute('id', `piece${index}`);
 
         view.onmousedown = function(e) {
             view.style.display = '';
@@ -262,13 +263,15 @@ function tryToGetPiece(o) {
     return nodes;
 }
 
-function setTimeoutForCoveringPiece(piece) {
-
+function setTimeoutForCoveringPiece(piece, removedPiece) {
     if (!piece) return;
 
     stepOfInterval++;
     setTimeout(() => {
         coverPieceInTable(piece);
+        if (removedPiece) {
+            removedPiece.remove();
+        }
     }, interval * stepOfInterval);
 }
 
