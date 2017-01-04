@@ -38,7 +38,7 @@ function startGame(header) {
 
         view.onmousedown = function(e) {
             view.style.display = '';
-            const coords = getCoords(view);
+            const coords = getCoordinates(view);
             const shiftX = e.pageX - coords.left;
             const shiftY = e.pageY - coords.top;
 
@@ -125,6 +125,7 @@ function startGame(header) {
 
                 document.onmousemove = null;
                 view.onmouseup = null;
+                view.style.zIndex = '';
 
                 console.log(piecesSet);
                 if (piecesSet == solutionLength && !isGameFinished) {
@@ -141,7 +142,7 @@ function startGame(header) {
     });
 }
 
-function getCoords(elem) {
+function getCoordinates(elem) {
     // (1)
     const box = elem.getBoundingClientRect();
 

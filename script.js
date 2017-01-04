@@ -419,16 +419,19 @@ $(document).ready(
             }
         );
 
-        $('#give-up').click(function(){
-            stepOfInterval = 0;
-            $('.piece').each(function() {
-                let index = parseInt($(this).attr('id').replace('piece', ''));
-                setTimeoutForCoveringPiece(solutionPieces[index], $(this));
-            });
-            /*$('.piece').remove();
-            solutionPieces.forEach(piece => setTimeoutForCoveringPiece(piece));*/
-            $(this).hide();
-        });
+        $('#give-up').click(
+            function() {
+                function placePiece() {
+                    let index = parseInt($(this).attr('id').replace('piece', ''));
+                    setTimeoutForCoveringPiece(solutionPieces[index], $(this));
+                }
+
+                stepOfInterval = 0;
+                $('.piece[style]').each(placePiece);
+                $('.piece').each(placePiece);
+                $(this).hide();
+            }
+        );
 
         $(document).on('click', 'td.cell',
             function () {
