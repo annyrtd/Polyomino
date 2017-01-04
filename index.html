@@ -23,22 +23,25 @@
 			</div>
 		  </header>
 		  <div class="mdl-layout__drawer">
-			<span class="mdl-layout-title">Settings</span>			
+			<span class="mdl-layout-title">Settings</span>
 		  </div>
 		  <main class="mdl-layout__content">
 			<div class="polyomino-area">
 				<div class='statistic'> Number of empty cells:&nbsp;<span class='statisticSpan'></span>
-					<button id="resetBarrierCells" 
+					<button id="resetBarrierCells"
 						class="mdl-button mdl-js-button mdl-button--icon mdl-button--raised mdl-button--accent mdl-js-ripple-effect">
 						<i class="material-icons">clear</i>
 					</button>
 					<div class="mdl-tooltip" for="resetBarrierCells">
 						Reset all barrier cells
 					</div>
-				</div>	
+				</div>
 				<div>
 					<button id="go" class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent mdl-js-ripple-effect">
 						Go!
+					</button>
+					<button style="display: none;" id="give-up" class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent mdl-js-ripple-effect">
+						Give up
 					</button>
 				</div>
 				<div class='arrow-area'>
@@ -50,7 +53,7 @@
 								<div class="mdl-tooltip" for="arrow-top">
 									Remove row
 								</div>
-							</td>								
+							</td>
 							<td class="arrow-td"></td>
 						</tr>
 						<tr class="arrow-tr">
@@ -79,14 +82,10 @@
 							<td class="arrow-td"></td>
 						</tr>
 					</table>
-				</div>	
+				</div>
 				<div class="solutionArea">
 					<table class='polytable mdl-shadow--2dp'>
 					</table>
-					<div class="solutionPieces">
-					</div>
-					<!--<div class="game">
-					</div>-->
 				</div>
 			</div>
 		  </main>

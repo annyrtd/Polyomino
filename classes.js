@@ -49,6 +49,7 @@ class Node {
 
 class Piece {
     constructor(coordinates) {
+        this.color = getRandomColor();
         let nodes = [];
         let maxrow = coordinates[0][0];
         let minrow = coordinates[0][0];
@@ -77,7 +78,8 @@ class Piece {
         this.maxcol = maxcol;
         this.mincol = mincol;
     }
-    getView(color = getRandomColor()) {
+    getView() {
+        let color = this.color;
         let tbody = document.createElement('tbody');
         let table = document.createElement('table');
 
@@ -98,7 +100,7 @@ class Piece {
            cell.style.border = '1px solid black';
         });
 
-        table.setAttribute('class', 'piece')
+        table.setAttribute('class', 'piece');
         table.setAttribute('data-nodes', this.nodes.map(item => new Node(item.row - this.minrow, item.column - this.mincol).toString()).join('-'));
         table.appendChild(tbody);
         return table;

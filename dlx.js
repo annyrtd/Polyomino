@@ -1,32 +1,40 @@
+'use strict';
+
 let isSolutionFound = false;
 const interval = 20;
 let stepOfInterval = 0;
 let currentPieceTdCoordinates;
 let currentCoordinatesAttribute;
+let piecesSet = 0;
+let solutionLength;
+let isGameFinished = false;
+let solution = [];
+let solutionPieces = [];
 
 function startGame(header) {
-    isSolutionFound = false;
+    isGameFinished = isSolutionFound = false;
     stepOfInterval = 0;
-    const solution = [];
+    solution = [];
+
     search(header, solution, 0);
-    //let previousRow = -10;
-    //let previousColumn = -10;
 
     if (!isSolutionFound) {
-        alertIfNoSolutionIsFound();
+        alertWithInterval('There is no solution!', interval * (stepOfInterval + 1));
         solution.splice(0, solution.length);
+        return;
     }
 
-    const solutionArea = $('div.solutionArea');
-    const piecesArea = $('div.solutionPieces');
-    piecesArea.empty();
+    piecesSet = 0;
+    solutionLength = solution.length;
 
-    let solutionPieces = print(solution);
+    const solutionArea = $('div.solutionArea');
+    solutionPieces = print(solution);
     solutionPieces.forEach(piece => {
         let view = piece.getView();
-        piecesArea.append(view);
+        solutionArea.append(view);
 
         view.onmousedown = function(e) {
+            view.style.display = '';
             const coords = getCoords(view);
             const shiftX = e.pageX - coords.left;
             const shiftY = e.pageY - coords.top;
@@ -34,16 +42,21 @@ function startGame(header) {
             let isPieceSet = true;
             currentCoordinatesAttribute = view.getAttribute('data-nodes');
             currentPieceTdCoordinates = currentCoordinatesAttribute.split('-').map(item => Node.fromString(item));
-            if (view.parentNode === solutionArea.get(0)) {
-                let row,column;
-                ({row, column} = getRowAndCol(e));
-                currentPieceTdCoordinates.every(item => {
-                    let tdRow = parseInt(item.row) + row;
-                    let tdCol = parseInt(item.column) + column;
-                    $(`#td-${tdRow}-${tdCol}`).removeClass('set');
-                    return true;
-                });
-            }
+
+            let row, column;
+            ({row, column} = getRowAndCol(e));
+            let isPieceRemoved = false;
+            currentPieceTdCoordinates.every(item => {
+                let tdRow = parseInt(item.row) + row;
+                let tdCol = parseInt(item.column) + column;
+                let td = $(`#td-${tdRow}-${tdCol}`);
+                if (td.hasClass('set') && !isPieceRemoved) {
+                    isPieceRemoved = true;
+                    piecesSet--;
+                }
+                td.removeClass('set');
+                return true;
+            });
 
             function moveAt(e) {
                 view.style.left = (e.pageX - shiftX - 4) + 'px';
@@ -65,39 +78,11 @@ function startGame(header) {
             moveAt(e);
 
             document.onmousemove = function (e) {
-                //$('td.cell').css('backgroundColor', '');
                 moveAt(e);
-                /*let row,column;
-                ({row, column} = getRowAndCol(e));
-
-                let isPieceCovered = true;
-
-                let currentPieceCells = [];
-                currentPieceTdCoordinates.every(item => {
-                    let tdRow = parseInt(item.row) + row;
-                    let tdCol = parseInt(item.column) + column;
-                    let cell = $(`#td-${tdRow}-${tdCol}`)
-                        .not('.set').not('.border-cell');
-
-                    if (cell.length > 0) {
-                        currentPieceCells.push(cell);
-                    } else {
-                        isPieceCovered = false;
-                        return false;
-                    }
-
-                    return true;
-                });
-
-                if (isPieceCovered) {
-                    currentPieceCells.forEach(item => {
-                        item.css('backgroundColor', '#dddddd');
-                    });
-                }*/
             };
 
             view.onmouseup = function (e) {
-                let row,column;
+                let row, column;
                 ({row, column} = getRowAndCol(e));
                 let rowPosition = row * 35;
                 let columnPosition = column * 35;
@@ -117,33 +102,40 @@ function startGame(header) {
 
                     return true;
                 });
+
+                solutionArea.append(view);
+
                 if (isPieceSet) {
-                    solutionArea.append(view);
                     currentPieceCells.forEach(item => {
                         item.addClass('set');
                     });
                     view.style.left = `${columnPosition - 4}px`;
                     view.style.top = `${rowPosition - 4}px`;
-
+                    view.style.display = 'block';
+                    piecesSet++;
                 } else {
-                    piecesArea.append(view);
                     view.style.position = '';
                     view.style.left = '';
-                    view.style.top = ''
+                    view.style.top = '';
+                    view.style.display = '';
                 }
+
                 document.onmousemove = null;
                 view.onmouseup = null;
-            };
 
+                console.log(piecesSet);
+                if (piecesSet == solutionLength && !isGameFinished) {
+                    isGameFinished = true;
+                    $('#give-up').hide();
+                    alertWithInterval('Congratulations!', 50);
+                }
+            };
         };
 
         view.ondragstart = function() {
             return false;
         };
     });
-
-    return isSolutionFound;
-
 }
 
 function getCoords(elem) {
@@ -209,6 +201,7 @@ function search(header, solution, k) {
     }
 }
 
+
 function searchAndColor(header, solution, k) {
     if (header.right == header) {
         if (isSolutionFound) {
@@ -229,7 +222,8 @@ function searchAndColor(header, solution, k) {
             solution[k] = row;
 
             let nodes = tryToGetPiece(row);
-            setTimeoutForCoveringPiece(nodes);
+            let piece = nodes ? new Piece(nodes) : undefined;
+            setTimeoutForCoveringPiece(piece);
 
             let j = row.right;
             while (j != row) {
@@ -238,7 +232,7 @@ function searchAndColor(header, solution, k) {
             }
             search(header, solution, k + 1);
             if (!isSolutionFound) {
-                setTimeoutForUncoveringPiece(nodes);
+                setTimeoutForUncoveringPiece(piece);
             }
             row = solution[k];
             current = row.column;
@@ -254,13 +248,6 @@ function searchAndColor(header, solution, k) {
     }
 }
 
-function alertIfNoSolutionIsFound() {
-    stepOfInterval++;
-    setTimeout(() => {
-        alert('There is no solution!');
-    }, interval * stepOfInterval);
-}
-
 function tryToGetPiece(o) {
     if (o instanceof ColumnObject) {
         return;
@@ -271,27 +258,53 @@ function tryToGetPiece(o) {
         nodes.push(o.column.name);
         o = o.right;
     }
-    //console.log(o);
     nodes.push(o.column.name);
     return nodes;
 }
 
-function setTimeoutForCoveringPiece(nodes) {
-    if (!nodes) return;
+function setTimeoutForCoveringPiece(piece) {
+
+    if (!piece) return;
 
     stepOfInterval++;
     setTimeout(() => {
-        coverPieceInTable(nodes);
+        coverPieceInTable(piece);
     }, interval * stepOfInterval);
 }
 
-function setTimeoutForUncoveringPiece(nodes) {
-    if (!nodes) return;
+function setTimeoutForUncoveringPiece(piece) {
+    if (!piece) return;
 
     stepOfInterval++;
     setTimeout(() => {
-        uncoverPieceInTable(nodes);
+        uncoverPieceInTable(piece);
     }, interval * stepOfInterval);
+}
+
+function coverPieceInTable(piece) {
+    const nodes = piece.nodes;
+    const color = piece.color;
+    for (let i = 0; i < nodes.length; i++) {
+        const row = nodes[i].row;
+        const column = nodes[i].column;
+        $('#td-' + row + '-' + column).css('backgroundColor', color);
+    }
+}
+
+function uncoverPieceInTable(piece) {
+    const nodes = piece.nodes;
+    for (let i = 0; i < nodes.length; i++) {
+        const row = nodes[i].row;
+        const column = nodes[i].column;
+        $('#td-' + row + '-' + column).css('backgroundColor', '');
+    }
+}
+
+
+function alertWithInterval(message, interval) {
+    setTimeout(() => {
+        alert(message);
+    }, interval);
 }
 
 function print(solution) {
@@ -314,23 +327,6 @@ function print(solution) {
         console.log(str);
     }
     return pieces;
-}
-
-function coverPieceInTable(nodes) {
-    const color = getRandomColor();
-    for (let i = 0; i < nodes.length; i++) {
-        const row = nodes[i].row;
-        const column = nodes[i].column;
-        $('#td-' + row + '-' + column).css('backgroundColor', color);
-    }
-}
-
-function uncoverPieceInTable(nodes) {
-    for (let i = 0; i < nodes.length; i++) {
-        const row = nodes[i].row;
-        const column = nodes[i].column;
-        $('#td-' + row + '-' + column).css('backgroundColor', '');
-    }
 }
 
 function getRandomColor() {

@@ -1,3 +1,5 @@
+'use strict';
+
 let numberOfRows, numberOfColumns;
 /*const oldPieces = [
     new Piece([
@@ -186,23 +188,6 @@ function getStartNode(arr) {
     }
 }
 
-/*function areNodesEqual(node1, node2) {
-    return (node1.row == node2.row) && (node1.column == node2.column);
-}
-
-function nodeToString(node) {
-    return node.row + ',' + node.column;
-}
-
-//example: "1,1"
-function stringToNode(str) {
-    var position = str.indexOf(',');
-    var row = str.substr(0, position);
-    var column = str.substr(position + 1);
-    return new Node(row, column);
-
-}
-*/
 function countOneComponent(startNode, arr) {
     let size = 0;
     arr[startNode.row][startNode.column] = 1;
@@ -405,6 +390,13 @@ function findColumnForNode(header, node) {
     return undefined;
 }
 
+function resetField() {
+    $('td.cell').removeClass('set').css('backgroundColor', '');
+    //solutionArea.find('.piece').remove();
+    $('.piece').remove();
+    $('#give-up').hide();
+}
+
 $(document).ready(
     function() {
         setInitialPolyminoTable();
@@ -413,8 +405,8 @@ $(document).ready(
 
         $('#go').click(
             function () {
-                $('td.cell').removeClass('set');
-                solutionArea.find('.piece').remove();
+                resetField();
+                $('#give-up').show();
                 shufflePieces();
                 //noinspection JSValidateTypes
                 if ($('span.statisticSpan').children('.bad').length > 0) {
@@ -427,13 +419,16 @@ $(document).ready(
             }
         );
 
+        $('#give-up').click(function(){
+            $('.piece').remove();
+            stepOfInterval = 0;
+            solutionPieces.forEach(piece => setTimeoutForCoveringPiece(piece));
+            $(this).hide();
+        });
 
         $(document).on('click', 'td.cell',
             function () {
-                $('td.cell')
-                    .removeClass('set')
-                    .css('backgroundColor', '');
-                solutionArea.find('.piece').remove();
+                resetField();
 
                 if ($(this).hasClass('empty-cell')) {
                     $(this).removeClass('empty-cell').addClass('border-cell');
@@ -448,8 +443,7 @@ $(document).ready(
 
         $("#resetBarrierCells").click(
             function () {
-                $('td.cell').removeClass('set');
-                solutionArea.find('.piece').remove();
+                resetField();
                 $(".polytable td").removeClass('border-cell').addClass('empty-cell').css('backgroundColor', '');
                 countStatistic();
             }
@@ -457,9 +451,9 @@ $(document).ready(
 
         $('div.arrow-div').click(
             function () {
-                $('td.cell').removeClass('set').css('backgroundColor', '');
+                resetField();
                 const direction = $(this).removeClass('arrow-div').attr('class').replace('arrow-', '');
-                solutionArea.find('.piece').remove();
+
                 switch (direction) {
                     case 'left':
                         removeColumn();

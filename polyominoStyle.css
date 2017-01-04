@@ -15,6 +15,7 @@
 {
 	border-collapse: collapse;
 	border: 1px black solid;
+	float: left;
 }
 
 .polytable td
@@ -37,8 +38,8 @@
 
 .polyomino-area
 {
-	padding: 32px;
-	padding-top: 0px;
+	padding: 32px;/*
+	padding-top: 0px;*/
 }
 
 .statistic
@@ -130,7 +131,7 @@
 .solutionPieces {
 	position: relative;
 	display: flex;
-	width: 50%;
+	max-width: 50%;
 	flex-wrap: wrap;
 }
 
@@ -138,6 +139,7 @@ table.piece{
 	border-collapse: collapse;
 	margin: 4px;
 	cursor: pointer;
+	float: left;
 }
 
 .piece td{
@@ -147,7 +149,15 @@ table.piece{
 
 .solutionArea {
 	position: relative;
-	display: flex;
+	/*display: flex;*/
+	width: 100%;
+	/*flex-wrap: wrap;*/
+}
+
+.solutionArea:after {
+	content: '';
+	clear: both;
+	display: block;
 }
 
 .over {
