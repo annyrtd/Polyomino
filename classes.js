@@ -77,10 +77,9 @@ class Piece {
         this.maxcol = maxcol;
         this.mincol = mincol;
     }
-    getView() {
+    getView(color = getRandomColor()) {
         let tbody = document.createElement('tbody');
         let table = document.createElement('table');
-        let color = getRandomColor();
 
         for (let i = this.minrow; i <= this.maxrow; i++) {
             let tr = document.createElement('tr');
@@ -99,6 +98,7 @@ class Piece {
            cell.style.border = '1px solid black';
         });
 
+        table.setAttribute('class', 'piece')
         table.setAttribute('data-nodes', this.nodes.map(item => new Node(item.row - this.minrow, item.column - this.mincol).toString()).join('-'));
         table.appendChild(tbody);
         return table;

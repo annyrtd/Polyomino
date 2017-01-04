@@ -74,7 +74,6 @@ const pieces = [
     ]),
 ];
 const piecesLength = [4];
-//var isSolutionFound = false;
 
 // algo: https://en.wikipedia.org/wiki/Fisher-Yates_shuffle
 function shufflePieces() {
@@ -678,6 +677,8 @@ $(document).ready(
 
         $('#go').click(
             function () {
+                $('td.cell').removeClass('set');
+                $('div.solutionArea').find('.piece').remove();
                 shufflePieces();
                 //noinspection JSValidateTypes
                 if ($('span.statisticSpan').children('.bad').length > 0) {
@@ -686,17 +687,23 @@ $(document).ready(
                 }
                 const arr = transformTableToMatrix();
                 const header = createXListForExactCoverProblem(arr);
-                let isFound = findSolution(header);
-                if (!isFound) {
+                /*let isFound = */
+                findSolution(header);
+                /*if (!isFound) {
                     alert('There is no solution!');
-                }
+                }*/
             }
         );
 
 
         $(document).on('click', 'td.cell',
             function () {
-                $('td.cell').css('backgroundColor', '');
+                $('td.cell')
+                    .removeClass('set')
+                    .css('backgroundColor', '');
+
+                $('div.solutionArea').find('.piece').remove();
+
                 //$(this).css('backgroundColor', '');
                 if ($(this).hasClass('empty-cell')) {
                     $(this).removeClass('empty-cell').addClass('border-cell');
@@ -711,6 +718,10 @@ $(document).ready(
 
         $("#resetBarrierCells").click(
             function () {
+                $('td.cell').removeClass('set');
+
+                $('div.solutionArea').find('.piece').remove();
+
                 $(".polytable td").removeClass('border-cell').addClass('empty-cell').css('backgroundColor', '');
                 countStatistic();
             }
@@ -718,7 +729,10 @@ $(document).ready(
 
         $('div.arrow-div').click(
             function () {
+                $('td.cell').removeClass('set').css('backgroundColor', '');;
                 const direction = $(this).removeClass('arrow-div').attr('class').replace('arrow-', '');
+
+                $('div.solutionArea').find('.piece').remove();
 
                 switch (direction) {
                     case 'left':
@@ -739,113 +753,5 @@ $(document).ready(
                 countStatistic();
             }
         );
-
-
-        let effect = 'move',
-//            format = 'Text',
-            dz = document.querySelector('.polytable');
-        //var dz = document.querySelector('.game');
-
-        EventUtil.addHandler(dz, 'dragenter', function(/*e*/) {
-
-            //let target = EventUtil.getCurrentTarget(e);
-            //target.style.backgroundColor = 'orange';
-            return false;
-        });
-
-        let previousRow = -10;
-        let previousCol = -10;
-        let isPieceSet = false;
-
-        EventUtil.addHandler(dz, 'dragover', function(e) {
-            let offset = $(this).offset();
-            let containerX = e.pageX - offset.left;
-            let containerY = e.pageY - offset.top;
-            let row = Math.round((containerY - currentY) / 35);
-            let column = Math.round((containerX - currentX) / 35);
-
-            if (previousCol != column || previousRow != row || !isPieceSet) {
-                isPieceSet = true;
-                previousRow = row;
-                previousCol = column;
-                $('td.cell')
-                    .not('.set')
-                    .not('.border-cell')
-                    .css('backgroundColor', '');
-
-                currentPieceTdCoordinates.every((item) => {
-                    /*let cell = document.getElementById(`td-${parseInt(item.row) + row}-${parseInt(item.column) + column}`);
-                     cell.style.backgroundColor = currentColor;*/
-
-                    let tdRow = parseInt(item.row) + row;
-                    let tdCol = parseInt(item.column) + column;
-                    let cell = $(`#td-${tdRow}-${tdCol}`)
-                        .not('.set').not('.border-cell');
-
-                    if (cell.length > 0) {
-                        cell.css('backgroundColor', currentColor);
-                    } else {
-                        $('td.cell')
-                            .not('.set')
-                            .not('.border-cell')
-                            .css('backgroundColor', '');
-                        isPieceSet = false;
-                        return false;
-                    }
-
-                    return true;
-                });
-            }
-
-
-            console.log(row, column);
-
-            EventUtil.preventDefault(e);
-
-            //noinspection JSUnresolvedVariable
-            e.dataTransfer.dropEffect = effect;
-
-            return false;
-        });
-
-        EventUtil.addHandler(dz, 'dragleave', function(/*e*/) {
-            //const target = EventUtil.getCurrentTarget(e);
-            $('td.cell').not('.set').css('backgroundColor', '');
-            isPieceSet = false;
-            //target.style.backgroundColor = '';
-            return false;
-        });
-
-        EventUtil.addHandler(dz, 'drop', function(e) {
-            EventUtil.preventDefault(e);
-            /*var currentTarget = EventUtil.getCurrentTarget(e),
-                DragMeId = e.dataTransfer.getData(format),
-                DragMe = document.getElementById(DragMeId);
-
-            currentTarget.appendChild(DragMe);*/
-            /*var target = EventUtil.getCurrentTarget(e);
-            target.style.backgroundColor = '';*/
-            /*let offset = $(this).offset();
-            //or $(this).parent().offset(); if you really just want the current element's offset
-            let containerX = e.pageX - offset.left;
-            let containerY = e.pageY - offset.top;
-            let row = Math.round((containerY - currentY) / 35);
-            let column = Math.round((containerX - currentX) / 35);*/
-
-            if (isPieceSet) {
-                draggableElement.parentNode.removeChild(draggableElement);
-                currentPieceTdCoordinates.forEach((item) => {
-                    /*let cell = document.getElementById(`td-${parseInt(item.row) + row}-${parseInt(item.column) + column}`);
-                     cell.style.backgroundColor = currentColor;*/
-                    let tdRow = parseInt(item.row) + previousRow;
-                    let tdCol = parseInt(item.column) + previousCol;
-
-                    let cell = $(`#td-${tdRow}-${tdCol}`);
-                    cell.addClass('set');
-                    //cell.attr('data-nodes', currentCoordinatesAttribute);
-                });
-            }
-            return false;
-        });
     }
 );

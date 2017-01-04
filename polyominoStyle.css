@@ -128,22 +128,24 @@
 }
 
 .solutionPieces {
+	position: relative;
 	display: flex;
 	width: 50%;
 	flex-wrap: wrap;
 }
 
-.solutionPieces table{
+table.piece{
 	border-collapse: collapse;
 	margin: 4px;
 }
 
-.solutionPieces td{
+.piece td{
 	width: 32px;
 	height: 32px;
 }
 
 .solutionArea {
+	position: relative;
 	display: flex;
 }
 

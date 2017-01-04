@@ -2,75 +2,12 @@ let isSolutionFound = false;
 const interval = 20;
 let stepOfInterval = 0;
 let solutionPieces;
-//var dragSrcEl = null;
 let currentX = 0, currentY = 0;
 let currentPieceTdCoordinates;
 let currentCoordinatesAttribute;
 let draggableElement = null;
+let draggableId;
 let currentColor;
-
-const EventUtil = {
-    addHandler: function(element, type, handler) {
-        if (element.addEventListener) {
-            element.addEventListener(type, handler, false);
-        } else if (element.attachEvent) {
-            element.attachEvent("on" + type, handler);
-        } else {
-            element["on" + type] = handler;
-        }
-    },
-    /*removeHandler: function(element, type, handler) {
-        if (element.removeEventListener) {
-            element.removeEventListener(type, handler, false);
-        } else if (element.detachEvent) {
-            element.detachEvent("on" + type, handler);
-        } else {
-            element["on" + type] = null;
-        }
-    },
-    getCurrentTarget: function(e) {
-        if (e.toElement) {
-            return e.toElement;
-        } else if (e.currentTarget) {
-            return e.currentTarget;
-        } else if (e.srcElement) {
-            return e.srcElement;
-        } else {
-            return null;
-        }
-    },*/
-    preventDefault: function(e) {
-        e.preventDefault ? e.preventDefault() : e.returnValue = false;
-    },
-
-    /**
-     * @author http://www.quirksmode.org/js/events_properties.html
-     * @method getMousePosition
-     * @param e
-     */
-    /*getMousePosition: function(e) {
-        let posx = 0,
-            posy = 0;
-        if (!e) {
-            e = window.event;
-        }
-
-        if (e.pageX || e.pageY) {
-            posx = e.pageX;
-            posy = e.pageY;
-        }
-        else if (e.clientX || e.clientY) {
-            posx = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
-            posy = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
-        }
-
-        return {
-            x: posx,
-            y: posy
-        };
-    }*/
-
-};
 
 function findSolution(header) {
     isSolutionFound = false;
@@ -78,19 +15,152 @@ function findSolution(header) {
     const solution = [];
     search(header, solution, 0);
 
-    solutionPieces = print(solution);
-    $('div.solutionPieces').empty();
+    if (!isSolutionFound) {
+        stepOfInterval++;
+        setTimeout(() => {
+            alert('There is no solution!');
+        }, interval * stepOfInterval);
+        solution.splice(0, solution.length);
+    }
 
-    solutionPieces.forEach(piece => {
+    solutionPieces = print(solution);
+
+
+    const solutionArea = $('div.solutionArea');
+    const piecesArea = $('div.solutionPieces');
+    piecesArea.empty();
+
+    /*let previousRow = -10;
+    let previousCol = -10;
+    //let isPieceSet = false;*/
+
+    solutionPieces.forEach((piece, index) => {
         let view = piece.getView();
-        $('div.solutionPieces').append(view);
-        view.setAttribute("draggable", "true");
+        piecesArea.append(view);
+
+        view.onmousedown = function(e) {
+            /*let offset = $(this).offset();
+            let currentX = e.pageX - offset.left;
+            let currentY = e.pageY - offset.top;*/
+
+            const coords = getCoords(view);
+            const shiftX = e.pageX - coords.left;
+            const shiftY = e.pageY - coords.top;
+
+            let isPieceSet = true;
+            currentCoordinatesAttribute = view.getAttribute('data-nodes');
+            currentPieceTdCoordinates = currentCoordinatesAttribute.split('-').map(item => Node.fromString(item));
+            console.log(currentPieceTdCoordinates);
+            if (view.parentNode === solutionArea.get(0)) {
+                let offset = solutionArea.offset();
+                let containerX = e.pageX - offset.left;
+                let containerY = e.pageY - offset.top;
+                let row = Math.round((containerY - shiftY) / 35);
+                let column = Math.round((containerX - shiftX) / 35);
+                currentPieceTdCoordinates.every((item) => {
+                    /*let cell = document.getElementById(`td-${parseInt(item.row) + row}-${parseInt(item.column) + column}`);
+                     cell.style.backgroundColor = currentColor;*/
+                    let tdRow = parseInt(item.row) + row;
+                    let tdCol = parseInt(item.column) + column;
+                    $(`#td-${tdRow}-${tdCol}`).removeClass('set');
+                    return true;
+                });
+            }
+            //currentColor = $(this).find('td[style]').css('backgroundColor');
+            //draggableElement = this;
+            //draggableId = this.getAttribute("id");
+
+
+
+            view.style.position = 'absolute';
+            document.body.appendChild(view);
+            moveAt(e);
+
+            view.style.zIndex = 1000; // над другими элементами
+
+            function moveAt(e) {
+                view.style.left = e.pageX - shiftX + 'px';
+                view.style.top = e.pageY - shiftY + 'px';
+            }
+
+            document.onmousemove = function (e) {
+                moveAt(e);
+            };
+
+            view.onmouseup = function (e) {
+                let offset = solutionArea.offset();
+                let containerX = e.pageX - offset.left;
+                let containerY = e.pageY - offset.top;
+                let row = Math.round((containerY - shiftY) / 35);
+                let column = Math.round((containerX - shiftX) / 35);
+                let rowPosition = row * 35;
+                let columnPosition = column * 35;
+
+                let currentPieceCells = [];
+
+                currentPieceTdCoordinates.every((item) => {
+                    /*let cell = document.getElementById(`td-${parseInt(item.row) + row}-${parseInt(item.column) + column}`);
+                     cell.style.backgroundColor = currentColor;*/
+                    let tdRow = parseInt(item.row) + row;
+                    let tdCol = parseInt(item.column) + column;
+                    let cell = $(`#td-${tdRow}-${tdCol}`)
+                        .not('.set').not('.border-cell');
+
+                    if (cell.length > 0) {
+                        currentPieceCells.push(cell);
+                    } else {
+                        /*$('td.cell')
+                            .not('.set')
+                            .not('.border-cell')
+                            .css('backgroundColor', '');*/
+                        isPieceSet = false;
+                        return false;
+                    }
+
+                    return true;
+                });
+
+                console.log(isPieceSet);
+                if (isPieceSet) {
+                    solutionArea.append(view);
+                    currentPieceCells.forEach(item => {
+                        item.addClass('set');
+                    });
+                    /*let offs = $(`#td-${row}-${column}`).offset();
+                    view.style.left = offs.left;
+                    view.style.top = offs.top;*/
+                    view.style.left = `${columnPosition - 4}px`;
+                    view.style.top = `${rowPosition - 4}px`;
+
+                } else {
+                    piecesArea.append(view);
+                    view.style.position = '';
+                    view.style.left = '';
+                    view.style.top = ''
+                }
+
+                /*view.style.position = '';
+                 view.style.left = '';
+                 view.style.top = '';*/
+
+                document.onmousemove = null;
+                view.onmouseup = null;
+            };
+
+        };
+
+        view.ondragstart = function() {
+            return false;
+        };
+
+        /*view.setAttribute("draggable", "true");
+        view.setAttribute("id", `piece${index}`);
         view.addEventListener('dragstart', handleDragStart, false);
-        /*view.addEventListener('dragenter', handleDragEnter, false);
+        /!*view.addEventListener('dragenter', handleDragEnter, false);
         view.addEventListener('dragover', handleDragOver, false);
         view.addEventListener('dragleave', handleDragLeave, false);
-        view.addEventListener('drop', handleDrop, false);*/
-        view.addEventListener('dragend', handleDragEnd, false);
+        view.addEventListener('drop', handleDrop, false);*!/
+        view.addEventListener('dragend', handleDragEnd, false);*/
 
 
         /*EventUtil.addHandler(view, 'dragstart', function(e) {
@@ -134,7 +204,30 @@ function findSolution(header) {
 
 }
 
-function handleDragStart(e) {
+function getCoords(elem) {
+    // (1)
+    const box = elem.getBoundingClientRect();
+
+    const body = document.body;
+    const docEl = document.documentElement;
+
+    // (2)
+    const scrollTop = window.pageYOffset || docEl.scrollTop || body.scrollTop;
+    const scrollLeft = window.pageXOffset || docEl.scrollLeft || body.scrollLeft;
+
+    // (3)
+    const clientTop = docEl.clientTop || body.clientTop || 0;
+    const clientLeft = docEl.clientLeft || body.clientLeft || 0;
+
+    // (4)
+    const top = box.top + scrollTop - clientTop;
+    const left = box.left + scrollLeft - clientLeft;
+
+    // (5)
+    return {top: Math.round(top), left: Math.round(left)};
+}
+
+/*function handleDragStart(e) {
     this.style.opacity = '0.99';  // this / e.target is the source node.
 
     //dragSrcEl = this;
@@ -149,6 +242,7 @@ function handleDragStart(e) {
     currentPieceTdCoordinates = currentCoordinatesAttribute.split('-').map(item => Node.fromString(item));
     currentColor = $(this).find('td[style]').css('backgroundColor');
     draggableElement = this;
+    draggableId = this.getAttribute("id");
     //console.log(currentX, currentY);
 
     //noinspection JSUnresolvedVariable
@@ -157,7 +251,7 @@ function handleDragStart(e) {
     e.dataTransfer.setData('text/html', this.innerHTML);
 }
 
-/*function handleDragOver(e) {
+function handleDragOver(e) {
     if (e.preventDefault) {
         e.preventDefault(); // Necessary. Allows us to drop.
     }
@@ -194,19 +288,58 @@ function handleDrop(e) {
     // See the section on the DataTransfer object.
 
     return false;
-}*/
+}
 
-function handleDragEnd(/*e*/) {
+function handleDragEnd(/!*e*!/) {
     // this/e.target is the source node.
     this.style.opacity = '1';
 
-    /*solutionPieces.forEach(function (piece) {
+    /!*solutionPieces.forEach(function (piece) {
         piece.classList.remove('over');
-    });*/
-}
+    });*!/
+}*/
 
 // DLX algorithm
 function search(header, solution, k) {
+    if (header.right == header) {
+        if (isSolutionFound) {
+            return;
+        }
+        isSolutionFound = true;
+        //print(solution);
+    }
+    else {
+        if (isSolutionFound) {
+            return;
+        }
+        let current = chooseColumn(header);
+        coverColumn(current);
+        let row = current.down;
+
+        while (row != current && !isSolutionFound) {
+            solution[k] = row;
+
+            let j = row.right;
+            while (j != row) {
+                coverColumn(j.column);
+                j = j.right;
+            }
+            search(header, solution, k + 1);
+            row = solution[k];
+            current = row.column;
+            j = row.left;
+            while (j != row) {
+                uncoverColumn(j.column);
+                j = j.left;
+            }
+            row = row.down;
+        }
+
+        uncoverColumn(current);
+    }
+}
+
+function searchAndColor(header, solution, k) {
     if (header.right == header) {
         if (isSolutionFound) {
             return;
