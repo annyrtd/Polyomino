@@ -10,11 +10,13 @@ let solutionLength;
 let isGameFinished = false;
 let solution = [];
 let solutionPieces = [];
+let timeStart;
 
 function startGame(header) {
     isGameFinished = isSolutionFound = false;
     stepOfInterval = 0;
     solution = [];
+    timeStart = performance.now();
 
     search(header, solution, 0);
 
@@ -164,6 +166,10 @@ function getCoords(elem) {
 
 // DLX algorithm
 function search(header, solution, k) {
+    if (performance.now() - timeStart > 5000) {
+        console.log("Too long");
+        return;
+    }
     if (header.right == header) {
         if (isSolutionFound) {
             return;
