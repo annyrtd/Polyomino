@@ -137,6 +137,7 @@
 table.piece{
 	border-collapse: collapse;
 	margin: 4px;
+	cursor: pointer;
 }
 
 .piece td{

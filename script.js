@@ -308,83 +308,6 @@ function removeRow() {
     numberOfRows--;
 }
 
-// test
-/*function test_getMatrixForExactCoverProblem() {
-    var header = new RootObject({});
-
-    var columnA = new ColumnObject({size: 2, name: 'A'});
-    var columnB = new ColumnObject({size: 1, name: 'B'});
-    var columnC = new ColumnObject({size: 1, name: 'C'});
-    var columnD = new ColumnObject({size: 2, name: 'D'});
-
-    var itemA1 = new DataObject({column: columnA});
-    var itemA3 = new DataObject({column: columnA});
-    var itemB2 = new DataObject({column: columnB});
-    var itemC1 = new DataObject({column: columnC});
-    var itemD3 = new DataObject({column: columnD});
-    var itemD4 = new DataObject({column: columnD});
-
-
-    header.left = columnD;
-    header.right = columnA;
-
-    columnA.left = header;
-    columnA.right = columnB;
-    columnA.up = itemA3;
-    columnA.down = itemA1;
-    columnA.column = columnA;
-
-    columnB.left = columnA;
-    columnB.right = columnC;
-    columnB.up = itemB2;
-    columnB.down = itemB2;
-    columnB.column = columnB;
-
-    columnC.left = columnB;
-    columnC.right = columnD;
-    columnC.up = itemC1;
-    columnC.down = itemC1;
-    columnC.column = columnC;
-
-    columnD.left = columnC;
-    columnD.right = header;
-    columnD.up = itemD4;
-    columnD.down = itemD3;
-    columnD.column = columnD;
-
-    itemA1.left = itemC1;
-    itemA1.right = itemC1;
-    itemA1.up = columnA;
-    itemA1.down = itemA3;
-
-    itemA3.left = itemD3;
-    itemA3.right = itemD3;
-    itemA3.up = itemA1;
-    itemA3.down = columnA;
-
-    itemB2.left = itemB2;
-    itemB2.right = itemB2;
-    itemB2.up = columnB;
-    itemB2.down = columnB;
-
-    itemC1.left = itemA1;
-    itemC1.right = itemA1;
-    itemC1.up = columnC;
-    itemC1.down = columnC;
-
-    itemD3.left = itemA3;
-    itemD3.right = itemA3;
-    itemD3.up = columnD;
-    itemD3.down = itemD4;
-
-    itemD4.left = itemD4;
-    itemD4.right = itemD4;
-    itemD4.up = itemD3;
-    itemD4.down = columnD;
-
-    return header;
-}*/
-
 // Prepare for DLX
 function createXListForExactCoverProblem(arr) {
     const header = createInitialXList(arr);
@@ -482,203 +405,16 @@ function findColumnForNode(header, node) {
     return undefined;
 }
 
-// DLX algorithm
-/*
-
-function search(header, solution, k) {
-    if (header.right == header) {
-        if (isSolutionFound) {
-            return;
-        }
-        isSolutionFound = true;
-        print(solution);
-    }
-    else {
-        var current = chooseColumn(header);
-        //TODO
-        /!*
-         var o = current.down;
-         var f = o.left;
-         var nodes = [];
-         while(o != f)
-         {
-         nodes[nodes.length] = o.column.name;
-         o = o.right;
-         }
-         nodes[nodes.length] = o.column.name;
-         coverPieceInTable(nodes);
-         *!/
-        //for row
-
-        coverColumn(current);
-        var row = current.down;
-        while (row != current) {
-            solution[k] = row;
-            /!*
-             uncoverColumn(current);
-             var o = row;
-             var f = o.left;
-             var nodes = [];
-             while(o != f)
-             {
-             nodes[nodes.length] = o.column.name;
-             o = o.right;
-             }
-             nodes[nodes.length] = o.column.name;
-
-             sleep(500);
-             coverPieceInTable(nodes);
-             coverColumn(current);
-             *!/
-
-            var j = row.right;
-            while (j != row) {
-                coverColumn(j.column);
-                j = j.right;
-            }
-
-
-            search(header, solution, k + 1);
-            row = solution[k];
-            current = row.column;
-            j = row.left;
-            while (j != row) {
-                uncoverColumn(j.column);
-                j = j.left;
-            }
-            row = row.down;
-            /!*if (!isSolutionFound)
-             {
-             sleep(500);
-             uncoverPieceInTable(nodes);
-             }*!/
-        }
-        uncoverColumn(current);
-        //uncoverPieceInTable(nodes);
-    }
-}
-
-function sleep(ms) {
-    ms += new Date().getTime();
-    while (new Date() < ms) {
-
-    }
-}
-
-function print(solution) {
-    console.log('Solution(' + solution.length + ' pieces):');
-    for (var i = 0; i < solution.length; i++) {
-        var o = solution[i];
-        var f = solution[i].left;
-        var str = '';
-        var nodes = [];
-        while (o != f) {
-            nodes[nodes.length] = o.column.name;
-            str += nodeToString(o.column.name) + '   '
-            o = o.right;
-        }
-        nodes[nodes.length] = o.column.name;
-        str += nodeToString(o.column.name);
-        coverPieceInTable(nodes);
-        console.log(str);
-    }
-}
-
-function coverPieceInTable(nodes) {
-    var color = getRandomColor();
-    for (var i = 0; i < nodes.length; i++) {
-        var row = nodes[i].row;
-        var column = nodes[i].column;
-        $('#td-' + row + '-' + column).css('backgroundColor', color);
-    }
-}
-
-function uncoverPieceInTable(nodes) {
-    for (var i = 0; i < nodes.length; i++) {
-        var row = nodes[i].row;
-        var column = nodes[i].column;
-        $('#td-' + row + '-' + column).css('backgroundColor', '');
-    }
-}
-
-function getRandomColor() {
-    var letters = '0123456789ABCDEF'.split('');
-    var color = '#';
-    for (var i = 0; i < 6; i++) {
-        color += letters[Math.floor(Math.random() * 16)];
-    }
-    if (color == '#000000' || color == '#FFFFFF') {
-        return '#333333';
-    }
-    return color;
-}
-
-function chooseColumn(header) {
-    var j = header.right;
-    var current = j;
-    var size = j.size;
-
-    while (j != header) {
-        if (j.size < size) {
-            current = j;
-            size = j.size;
-        }
-        j = j.right;
-    }
-
-    return current;
-}
-
-function coverColumn(current) {
-    current.right.left = current.left;
-    current.left.right = current.right;
-    var i = current.down;
-    while (i != current) {
-        var j = i.right;
-        while (j != i) {
-            j.down.up = j.up;
-            j.up.down = j.down;
-            j.column.size--;
-
-            j = j.right;
-        }
-
-        i = i.down;
-    }
-}
-
-function uncoverColumn(current) {
-    var i = current.up;
-    while (i != current) {
-        var j = i.left;
-        while (j != i) {
-            j.column.size++;
-            j.down.up = j;
-            j.up.down = j;
-
-            j = j.left;
-        }
-
-        i = i.up;
-    }
-    current.right.left = current;
-    current.left.right = current;
-}
-*/
-
 $(document).ready(
     function() {
         setInitialPolyminoTable();
         countStatistic();
-
-        /*var header = test_getMatrixForExactCoverProblem();
-        var solution = [];
-        search(header, solution, 0);*/
+        let solutionArea = $('div.solutionArea');
 
         $('#go').click(
             function () {
                 $('td.cell').removeClass('set');
-                $('div.solutionArea').find('.piece').remove();
+                solutionArea.find('.piece').remove();
                 shufflePieces();
                 //noinspection JSValidateTypes
                 if ($('span.statisticSpan').children('.bad').length > 0) {
@@ -687,11 +423,7 @@ $(document).ready(
                 }
                 const arr = transformTableToMatrix();
                 const header = createXListForExactCoverProblem(arr);
-                /*let isFound = */
-                findSolution(header);
-                /*if (!isFound) {
-                    alert('There is no solution!');
-                }*/
+                startGame(header);
             }
         );
 
@@ -701,10 +433,8 @@ $(document).ready(
                 $('td.cell')
                     .removeClass('set')
                     .css('backgroundColor', '');
+                solutionArea.find('.piece').remove();
 
-                $('div.solutionArea').find('.piece').remove();
-
-                //$(this).css('backgroundColor', '');
                 if ($(this).hasClass('empty-cell')) {
                     $(this).removeClass('empty-cell').addClass('border-cell');
                     countStatistic();
@@ -719,9 +449,7 @@ $(document).ready(
         $("#resetBarrierCells").click(
             function () {
                 $('td.cell').removeClass('set');
-
-                $('div.solutionArea').find('.piece').remove();
-
+                solutionArea.find('.piece').remove();
                 $(".polytable td").removeClass('border-cell').addClass('empty-cell').css('backgroundColor', '');
                 countStatistic();
             }
@@ -729,11 +457,9 @@ $(document).ready(
 
         $('div.arrow-div').click(
             function () {
-                $('td.cell').removeClass('set').css('backgroundColor', '');;
+                $('td.cell').removeClass('set').css('backgroundColor', '');
                 const direction = $(this).removeClass('arrow-div').attr('class').replace('arrow-', '');
-
-                $('div.solutionArea').find('.piece').remove();
-
+                solutionArea.find('.piece').remove();
                 switch (direction) {
                     case 'left':
                         removeColumn();
