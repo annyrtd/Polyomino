@@ -209,7 +209,7 @@ function search(header, solution, k) {
 }
 
 
-function searchAndColor(header, solution, k) {
+/*function searchAndColor(header, solution, k) {
     if (header.right == header) {
         if (isSolutionFound) {
             return;
@@ -253,9 +253,9 @@ function searchAndColor(header, solution, k) {
 
         uncoverColumn(current);
     }
-}
+}*/
 
-function tryToGetPiece(o) {
+/*function tryToGetPiece(o) {
     if (o instanceof ColumnObject) {
         return;
     }
@@ -267,7 +267,7 @@ function tryToGetPiece(o) {
     }
     nodes.push(o.column.name);
     return nodes;
-}
+}*/
 
 function setTimeoutForCoveringPiece(piece, removedPiece) {
     if (!piece) return;
@@ -281,14 +281,14 @@ function setTimeoutForCoveringPiece(piece, removedPiece) {
     }, interval * stepOfInterval);
 }
 
-function setTimeoutForUncoveringPiece(piece) {
+/*function setTimeoutForUncoveringPiece(piece) {
     if (!piece) return;
 
     stepOfInterval++;
     setTimeout(() => {
         uncoverPieceInTable(piece);
     }, interval * stepOfInterval);
-}
+}*/
 
 function coverPieceInTable(piece) {
     const nodes = piece.nodes;
@@ -300,14 +300,14 @@ function coverPieceInTable(piece) {
     }
 }
 
-function uncoverPieceInTable(piece) {
+/*function uncoverPieceInTable(piece) {
     const nodes = piece.nodes;
     for (let i = 0; i < nodes.length; i++) {
         const row = nodes[i].row;
         const column = nodes[i].column;
         $('#td-' + row + '-' + column).css('backgroundColor', '');
     }
-}
+}*/
 
 
 function alertWithInterval(message, interval) {

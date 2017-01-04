@@ -6,125 +6,112 @@
 	outline: none;
 }
 
-.mdl-layout__content
-{
+.mdl-layout__content {
 	background-color: #FFEF92;
 }
 
-.polytable
-{
+.polytable {
 	border-collapse: collapse;
 	border: 1px black solid;
 	float: left;
 }
 
-.polytable td
-{
+.polytable td {
 	width: 32px;
 	height: 32px;
 	border: 1px black solid;
 	cursor: pointer;
 }
 
-.empty-cell
-{
+.empty-cell {
 	background-color: white;
 }
 
-.border-cell
-{
+.border-cell {
 	background-color: black;
 }
 
-.polyomino-area
-{
-	padding: 32px;
-	padding-top: 0px;
+.polyomino-area {
+	padding: 0 32px 32px;
 }
 
-.statistic
-{
-	margin: 16px 0px;
+@media screen and (max-width: 1024px) {
+	.polyomino-area {
+		padding-top: 32px;
+	}
+}
+
+.statistic {
+	margin: 16px 0;
 	display: flex;
 	align-items: center;
 }
 
-.arrow-area
-{
-	margin: 16px 0px;	
+.arrow-area {
+	margin: 16px 0;
 }
 
-.flexBarrier
-{
-	width:100%;
+.flexBarrier {
+	width: 100%;
 	height: 16px;
 }
 
-#resetBarrierCells
-{
+#resetBarrierCells {
 	margin-left: 16px;
 }
 
-.arrow-td, .arrow-tr
-{
+.arrow-td, .arrow-tr {
 	border: none !important;
 	border-image-width: 0 !important;
 	vertical-align: middle;
 	cursor: default !important;
 }
 
-.arrow-div 
-{
+.arrow-div {
 	outline: none;
 }
 
-.arrow-bottom 
-{
-	width: 0; 
-	height: 0; 
+.arrow-bottom {
+	width: 0;
+	height: 0;
 	border-left: 20px solid transparent;
-	border-right: 20px solid transparent;	
+	border-right: 20px solid transparent;
 	border-top: 20px solid black;
 	cursor: pointer;
 }
 
-.arrow-right 
-{
-	width: 0; 
+.arrow-right {
+	width: 0;
 	height: 0;
 	border-top: 20px solid transparent;
-	border-bottom: 20px solid transparent;	
+	border-bottom: 20px solid transparent;
 	border-left: 20px solid black;
 	cursor: pointer;
 }
 
-.arrow-top 
-{
-	width: 0; 
-	height: 0; 
+.arrow-top {
+	width: 0;
+	height: 0;
 	border-right: 20px solid transparent;
-	border-left: 20px solid transparent;	
+	border-left: 20px solid transparent;
 	border-bottom: 20px solid black;
 	cursor: pointer;
 }
 
-.arrow-left 
-{
-	width: 0; 
+.arrow-left {
+	width: 0;
 	height: 0;
 	border-bottom: 20px solid transparent;
-	border-top: 20px solid transparent;	
+	border-top: 20px solid transparent;
 	border-right: 20px solid black;
 	cursor: pointer;
 }
 
-.good
-{
+.good {
 	color: #47DE17;
 }
 
-.bad
-{
+.bad {
 	color: red;
 }
 
@@ -135,14 +122,14 @@
 	flex-wrap: wrap;
 }
 
-table.piece{
+table.piece {
 	border-collapse: collapse;
 	margin: 4px;
 	cursor: pointer;
 	float: left;
 }
 
-.piece td{
+.piece td {
 	width: 32px;
 	height: 32px;
 }
