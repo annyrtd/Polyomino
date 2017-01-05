@@ -116,11 +116,24 @@ function generatePolyminoTable() {
     //const numberOfPieces = level + 3;
     //const possibilityOfBarriers = 1/(1 - numberOfBarriers/numberOfPieces);
     const repeats = 3;
-    const numberOfPieces = Math.floor(level/repeats) + 3;
+    const numberOfPieces = Math.floor(level / repeats) + 3;
     const numberOfBarriers = (level % repeats);
     const area = (numberOfPieces + numberOfBarriers) * 4;
-    const numberOfRows = 4;
-    const numberOfColumns = numberOfPieces + numberOfBarriers;
+    //const numberOfRows = 4;
+    //const numberOfColumns = numberOfPieces + numberOfBarriers;
+    let numberOfRows, numberOfColumns;
+    let index;
+    for (numberOfRows = index = 4; index < numberOfPieces + numberOfBarriers; index++, numberOfRows = index) {
+        let side = area / index;
+        numberOfColumns = Math.floor(side);
+        if (side == numberOfColumns && Math.abs(numberOfColumns - numberOfRows) <= 5) {
+            break;
+        }
+    }
+
+    if (numberOfRows > numberOfColumns) {
+        [numberOfRows, numberOfColumns] = [numberOfColumns, numberOfRows];
+    }
 
     table.empty();
     //numberOfRows = 8;
@@ -132,19 +145,19 @@ function generatePolyminoTable() {
             let td = $(`<td class='cell empty-cell' id='td-${i}-${j}'></td>`);
             row.append(td);
             /*if (Math.floor(Math.random()*possibilityOfBarriers) && barriersSet < numberOfBarriers * 4) {
-                td.addClass('border-cell');
-                barriersSet++;
-            } else {
-                td.addClass('empty-cell');
-            }*/
+             td.addClass('border-cell');
+             barriersSet++;
+             } else {
+             td.addClass('empty-cell');
+             }*/
         }
         table.append(row);
     }
     /*if (barriersSet < numberOfBarriers * 4) {
-        for (let i = barriersSet; i < numberOfBarriers * 4) {
+     for (let i = barriersSet; i < numberOfBarriers * 4) {
 
-        }
-    }*/
+     }
+     }*/
     for (let i = 0; i < numberOfBarriers * 4; i++) {
         let allCells = $('td.empty-cell');
         $(allCells[Math.floor(Math.random() * (area - i))])
@@ -153,12 +166,12 @@ function generatePolyminoTable() {
     }
 
     /*resetField();
-    $('#give-up').show();*/
+     $('#give-up').show();*/
     shufflePieces();
     /*if ($('span.statisticSpan').children('.bad').length > 0) {
-        alert("It's impossible to cover table with such number of empty cells!");
-        return;
-    }*/
+     alert("It's impossible to cover table with such number of empty cells!");
+     return;
+     }*/
     const arr = transformTableToMatrix();
     const header = createXListForExactCoverProblem(arr);
     startGame(header);

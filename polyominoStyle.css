@@ -125,7 +125,7 @@
 
 table.piece {
 	border-collapse: collapse;
-	margin: 0 8px;
+	margin: 0 8px 8px;
 	cursor: pointer;
 	float: left;
 }
