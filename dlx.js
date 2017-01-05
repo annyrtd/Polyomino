@@ -51,108 +51,115 @@ function startGame(header) {
         solutionArea.append(view);
         view.setAttribute('id', `piece${index}`);
 
-        view.onmousedown = function(e) {
-            view.style.display = '';
-            const coords = getCoordinates(view);
-            const shiftX = e.pageX - coords.left;
-            const shiftY = e.pageY - coords.top;
+        $(view).find('td.pieceCell').each(function() {
+            let cell = this;
+            cell.onmousedown = function(e) {
+                view.style.display = '';
+                const coords = getCoordinates(view);
+                const shiftX = e.pageX - coords.left;
+                const shiftY = e.pageY - coords.top;
 
-            let isPieceSet = true;
-            currentCoordinatesAttribute = view.getAttribute('data-nodes');
-            currentPieceTdCoordinates = currentCoordinatesAttribute.split('-').map(item => Node.fromString(item));
+                let isPieceSet = true;
+                currentCoordinatesAttribute = view.getAttribute('data-nodes');
+                currentPieceTdCoordinates = currentCoordinatesAttribute.split('-').map(item => Node.fromString(item));
 
-            let row, column;
-            ({row, column} = getRowAndCol(e));
-            let isPieceRemoved = false;
-            currentPieceTdCoordinates.every(item => {
-                let tdRow = parseInt(item.row) + row;
-                let tdCol = parseInt(item.column) + column;
-                let td = $(`#td-${tdRow}-${tdCol}`);
-                if (td.hasClass('set') && !isPieceRemoved) {
-                    isPieceRemoved = true;
-                    piecesSet--;
-                }
-                td.removeClass('set');
-                return true;
-            });
-
-            function moveAt(e) {
-                view.style.left = (e.pageX - shiftX - 8) + 'px';
-                view.style.top = (e.pageY - shiftY) + 'px';
-            }
-
-            function getRowAndCol(e) {
-                let offset = solutionArea.offset();
-                let containerX = e.pageX - offset.left;
-                let containerY = e.pageY - offset.top;
-                let row = Math.round((containerY - shiftY) / 35);
-                let column = Math.round((containerX - shiftX) / 35);
-                return {row, column};
-            }
-
-            view.style.zIndex = 1000; // над другими элементами
-            view.style.position = 'absolute';
-            document.body.appendChild(view);
-            moveAt(e);
-
-            document.onmousemove = function (e) {
-                moveAt(e);
-            };
-
-            view.onmouseup = function (e) {
                 let row, column;
                 ({row, column} = getRowAndCol(e));
-                let rowPosition = row * 35;
-                let columnPosition = column * 35;
-                let currentPieceCells = [];
+                let isPieceRemoved = false;
                 currentPieceTdCoordinates.every(item => {
                     let tdRow = parseInt(item.row) + row;
                     let tdCol = parseInt(item.column) + column;
-                    let cell = $(`#td-${tdRow}-${tdCol}`)
-                        .not('.set').not('.border-cell');
-
-                    if (cell.length > 0) {
-                        currentPieceCells.push(cell);
-                    } else {
-                        isPieceSet = false;
-                        return false;
+                    let td = $(`#td-${tdRow}-${tdCol}`);
+                    if (td.hasClass('set') && !isPieceRemoved) {
+                        isPieceRemoved = true;
+                        piecesSet--;
                     }
-
+                    td.removeClass('set');
                     return true;
                 });
 
-                solutionArea.append(view);
+                function moveAt(e) {
+                    view.style.left = (e.pageX - shiftX - 8) + 'px';
+                    view.style.top = (e.pageY - shiftY) + 'px';
+                }
 
-                if (isPieceSet) {
-                    currentPieceCells.forEach(item => {
-                        item.addClass('set');
+                function getRowAndCol(e) {
+                    let offset = solutionArea.offset();
+                    let containerX = e.pageX - offset.left;
+                    let containerY = e.pageY - offset.top;
+                    let row = Math.round((containerY - shiftY) / 35);
+                    let column = Math.round((containerX - shiftX) / 35);
+                    return {row, column};
+                }
+
+                view.style.zIndex = 1000; // над другими элементами
+                view.style.position = 'absolute';
+                document.body.appendChild(view);
+                moveAt(e);
+
+                document.onmousemove = function (e) {
+                    moveAt(e);
+                };
+
+                cell.onmouseup = function (e) {
+                    let row, column;
+                    ({row, column} = getRowAndCol(e));
+                    let rowPosition = row * 35;
+                    let columnPosition = column * 35;
+                    let currentPieceCells = [];
+                    currentPieceTdCoordinates.every(item => {
+                        let tdRow = parseInt(item.row) + row;
+                        let tdCol = parseInt(item.column) + column;
+                        let cell = $(`#td-${tdRow}-${tdCol}`)
+                            .not('.set').not('.border-cell');
+
+                        if (cell.length > 0) {
+                            currentPieceCells.push(cell);
+                        } else {
+                            isPieceSet = false;
+                            return false;
+                        }
+
+                        return true;
                     });
-                    view.style.left = `${columnPosition - 8}px`;
-                    view.style.top = `${rowPosition}px`;
-                    view.style.display = 'block';
-                    piecesSet++;
-                } else {
-                    view.style.position = '';
-                    view.style.left = '';
-                    view.style.top = '';
-                    view.style.display = '';
-                }
 
-                document.onmousemove = null;
-                view.onmouseup = null;
-                view.style.zIndex = '';
+                    solutionArea.append(view);
 
-                console.log(piecesSet);
-                if (piecesSet == solutionLength) {
-                    alertWithInterval('Congratulations!', 50);
-                    $('.piece').each(placePieceNoInterval);
-                    level++;
-                    score = parseInt(score + scoreForLevel);
-                    $('#give-up, #add-piece').prop('disabled', true);
-                    $('#next').prop('disabled', false);
-                }
+                    if (isPieceSet) {
+                        currentPieceCells.forEach(item => {
+                            item.addClass('set');
+                        });
+                        view.style.left = `${columnPosition - 8}px`;
+                        view.style.top = `${rowPosition}px`;
+                        view.style.display = 'block';
+                        piecesSet++;
+                    } else {
+                        view.style.position = '';
+                        view.style.left = '';
+                        view.style.top = '';
+                        view.style.display = '';
+                    }
+
+                    document.onmousemove = null;
+                    cell.onmouseup = null;
+                    view.style.zIndex = '';
+
+                    console.log(piecesSet);
+                    if (piecesSet == solutionLength) {
+                        alertWithInterval('Congratulations!', 50);
+                        $('.piece').each(placePieceNoInterval);
+                        level++;
+                        score = parseInt(score + scoreForLevel);
+                        $('#give-up, #add-piece').prop('disabled', true);
+                        $('#next').prop('disabled', false);
+                    }
+                };
             };
-        };
+
+            cell.ondragstart = function() {
+                return false;
+            };
+        });
 
         view.ondragstart = function() {
             return false;

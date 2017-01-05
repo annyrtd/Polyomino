@@ -99,6 +99,7 @@ class Piece {
                .children[node.row - this.minrow]
                .children[node.column - this.mincol];
            cell.style.backgroundColor = color;
+           cell.setAttribute('class', 'pieceCell');
            cell.style.border = '1px solid black';
         });
 

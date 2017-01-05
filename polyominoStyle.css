@@ -38,13 +38,19 @@
 table.piece {
 	border-collapse: collapse;
 	margin: 0 8px 8px;
-	cursor: pointer;
 	float: left;
+	pointer-events: none;
 }
 
 .piece td {
 	width: 32px;
 	height: 32px;
+	pointer-events: none;
+}
+
+.piece td.pieceCell {
+	pointer-events: auto;
+	cursor: pointer;
 }
 
 .solutionArea {
@@ -74,5 +80,10 @@ table.piece {
 }
 
 .menu button {
-	margin: 0 0 0 32px;
+	margin: 0 0 16px 32px;
+}
+
+.buttons {
+	display: flex;
+	flex-wrap: wrap;
 }
