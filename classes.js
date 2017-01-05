@@ -1,5 +1,7 @@
 'use strict';
 
+const localStorage = window.localStorage || {};
+
 class RootObject {
     constructor({left, right}) {
         this.left = left;
@@ -106,11 +108,3 @@ class Piece {
         return table;
     }
 }
-
-/*
-module.exports.RootObject = RootObject;
-module.exports.DataObject = DataObject;
-module.exports.ColumnObject = ColumnObject;
-module.exports.Node = Node;
-module.exports.Piece = Piece;
-*/

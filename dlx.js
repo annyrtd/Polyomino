@@ -7,13 +7,13 @@ let currentPieceTdCoordinates;
 let currentCoordinatesAttribute;
 let piecesSet = 0;
 let solutionLength;
-let isGameFinished = false;
 let solution = [];
 let solutionPieces = [];
 let timeStart;
+const scoreForLevel = 500;
 
 function startGame(header) {
-    isGameFinished = isSolutionFound = false;
+    isSolutionFound = false;
     stepOfInterval = 0;
     solution = [];
     timeStart = performance.now();
@@ -143,12 +143,13 @@ function startGame(header) {
                 view.style.zIndex = '';
 
                 console.log(piecesSet);
-                if (piecesSet == solutionLength && !isGameFinished) {
-                    isGameFinished = true;
-                    $('#give-up').hide();
+                if (piecesSet == solutionLength) {
                     alertWithInterval('Congratulations!', 50);
+                    $('.piece').each(placePieceNoInterval);
                     level++;
-                    generatePolyminoTable();
+                    score = parseInt(score + scoreForLevel);
+                    $('#give-up, #add-piece').prop('disabled', true);
+                    $('#next').prop('disabled', false);
                 }
             };
         };
@@ -157,6 +158,17 @@ function startGame(header) {
             return false;
         };
     });
+}
+
+function placePiece() {
+    let index = parseInt($(this).attr('id').replace('piece', ''));
+    setTimeoutForCoveringPiece(solutionPieces[index], $(this));
+}
+
+function placePieceNoInterval() {
+    let index = parseInt($(this).attr('id').replace('piece', ''));
+    coverPieceInTable(solutionPieces[index]);
+    $(this).remove();
 }
 
 function getCoordinates(elem) {
@@ -226,67 +238,6 @@ function search(header, solution, k) {
     }
 }
 
-
-/*function searchAndColor(header, solution, k) {
-    if (header.right == header) {
-        if (isSolutionFound) {
-            return;
-        }
-        isSolutionFound = true;
-        //print(solution);
-    }
-    else {
-        if (isSolutionFound) {
-            return;
-        }
-        let current = chooseColumn(header);
-        coverColumn(current);
-        let row = current.down;
-
-        while (row != current && !isSolutionFound) {
-            solution[k] = row;
-
-            let nodes = tryToGetPiece(row);
-            let piece = nodes ? new Piece(nodes) : undefined;
-            setTimeoutForCoveringPiece(piece);
-
-            let j = row.right;
-            while (j != row) {
-                coverColumn(j.column);
-                j = j.right;
-            }
-            search(header, solution, k + 1);
-            if (!isSolutionFound) {
-                setTimeoutForUncoveringPiece(piece);
-            }
-            row = solution[k];
-            current = row.column;
-            j = row.left;
-            while (j != row) {
-                uncoverColumn(j.column);
-                j = j.left;
-            }
-            row = row.down;
-        }
-
-        uncoverColumn(current);
-    }
-}*/
-
-/*function tryToGetPiece(o) {
-    if (o instanceof ColumnObject) {
-        return;
-    }
-    let f = o.left;
-    let nodes = [];
-    while (o != f) {
-        nodes.push(o.column.name);
-        o = o.right;
-    }
-    nodes.push(o.column.name);
-    return nodes;
-}*/
-
 function setTimeoutForCoveringPiece(piece, removedPiece) {
     if (!piece) return;
 
@@ -299,36 +250,17 @@ function setTimeoutForCoveringPiece(piece, removedPiece) {
     }, interval * stepOfInterval);
 }
 
-/*function setTimeoutForUncoveringPiece(piece) {
-    if (!piece) return;
-
-    stepOfInterval++;
-    setTimeout(() => {
-        uncoverPieceInTable(piece);
-    }, interval * stepOfInterval);
-}*/
-
 function coverPieceInTable(piece) {
     const nodes = piece.nodes;
     const color = piece.color;
     for (let i = 0; i < nodes.length; i++) {
         const row = nodes[i].row;
         const column = nodes[i].column;
-        $('#td-' + row + '-' + column).css('backgroundColor', color);
+        $('#td-' + row + '-' + column).css('backgroundColor', color).addClass('set');
     }
 }
 
-/*function uncoverPieceInTable(piece) {
-    const nodes = piece.nodes;
-    for (let i = 0; i < nodes.length; i++) {
-        const row = nodes[i].row;
-        const column = nodes[i].column;
-        $('#td-' + row + '-' + column).css('backgroundColor', '');
-    }
-}*/
-
-
-function alertWithInterval(message, interval) {
+function alertWithInterval(message, interval = 50) {
     setTimeout(() => {
         alert(message);
     }, interval);

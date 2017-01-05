@@ -3,9 +3,7 @@
 	<head>
 		<script src="jquery-1.12.0.min.js"></script>
 		<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-		<!--<link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.deep_orange-amber.min.css">-->
 		<link rel="stylesheet" href="material.deep_orange-amber.min.css">
-		<!--<script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>-->
 		<script defer src="material.min.js"></script>
 		<script src="classes.js"></script>
 		<script src="dlx.js"></script>
@@ -16,73 +14,23 @@
 	</head>
 	<body>
 		<div class="demo-layout-transparent mdl-layout mdl-js-layout">
-            <!--<header class="mdl-layout__header mdl-layout__header&#45;&#45;transparent">
-                <div class="mdl-layout__header-row">
-                    &lt;!&ndash; Title &ndash;&gt;
-                    <span class="mdl-layout-title">Polymino</span>
-                </div>
-		    </header>
-		    <div class="mdl-layout__drawer">
-			    <span class="mdl-layout-title">Settings</span>
-		    </div>-->
 		    <main class="mdl-layout__content">
 			    <div class="polyomino-area">
-                    <div class='statistic'> <!--Number of empty cells:&nbsp;<span class='statisticSpan'></span>
-                        <button id="resetBarrierCells"
-                            class="mdl-button mdl-js-button mdl-button&#45;&#45;icon mdl-button&#45;&#45;raised mdl-button&#45;&#45;accent mdl-js-ripple-effect">
-                            <i class="material-icons">clear</i>
+                    <div class="menu">
+                        <div class='statistic'>
+                            Level completed:&nbsp;<span class='levelSpan'></span><br><br>
+                            Score:&nbsp;<span class='scoreSpan'></span><span class="star">&nbsp;&#9733;</span>
+                        </div>
+                        <!-- Colored mini FAB button -->
+                        <button id="add-piece" class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent mdl-js-ripple-effect">
+                            Place a piece (<span class="pieceCost"></span><span class="star">&nbsp;&#9733</span>)
                         </button>
-                        <div class="mdl-tooltip" for="resetBarrierCells">
-                            Reset all barrier cells
-                        </div>-->
-                        Level completed:&nbsp;<span class='statisticSpan'></span>
-                    </div>
-                    <div style="display: none;">
-                        <button id="go" class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent mdl-js-ripple-effect">
-                            Go!
+                        <button id="give-up" class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent mdl-js-ripple-effect">
+                            Give up (<span class="giveUpCost"></span><span class="star">&nbsp;&#9733</span>)
                         </button>
-                        <button style="display: none;" id="give-up" class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent mdl-js-ripple-effect">
-                            Give up
-                        </button>
-                    </div>
-                    <div class='arrow-area' style="display: none;">
-                        <table class='arrowtable'>
-                            <tr class="arrow-tr">
-                                <td class="arrow-td"></td>
-                                <td class="arrow-td">
-                                    <div id="arrow-top" class="arrow-div arrow-top"></div>
-                                    <div class="mdl-tooltip" for="arrow-top">
-                                        Remove row
-                                    </div>
-                                </td>
-                                <td class="arrow-td"></td>
-                            </tr>
-                            <tr class="arrow-tr">
-                                <td class="arrow-td">
-                                    <div id="arrow-left" class="arrow-div arrow-left"></div>
-                                    <div class="mdl-tooltip" for="arrow-left">
-                                        Remove column
-                                    </div>
-                                </td>
-                                <td class="arrow-td"></td>
-                                <td class="arrow-td">
-                                    <div id="arrow-right" class="arrow-div arrow-right"></div>
-                                    <div class="mdl-tooltip" for="arrow-right">
-                                        Add column
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr class="arrow-tr">
-                                <td class="arrow-td"></td>
-                                <td class="arrow-td">
-                                    <div id="arrow-bottom" class="arrow-div arrow-bottom"></div>
-                                    <div class="mdl-tooltip" for="arrow-bottom">
-                                        Add row
-                                    </div>
-                                </td>
-                                <td class="arrow-td"></td>
-                            </tr>
-                        </table>
+						<button id="next" class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent mdl-js-ripple-effect" disabled>
+							Next level
+						</button>
                     </div>
                     <div class="solutionArea">
                         <table class='polytable mdl-shadow--2dp'>
