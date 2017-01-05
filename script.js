@@ -76,10 +76,11 @@ const pieces = [
     ]),
 ];
 const piecesLength = [4];
+let level = 0;
 
 // algo: https://en.wikipedia.org/wiki/Fisher-Yates_shuffle
-function shufflePieces() {
-    let currentIndex = pieces.length, randomIndex;
+function shufflePieces(arrayOfPieces = pieces) {
+    let currentIndex = arrayOfPieces.length, randomIndex;
 
     // While there remain elements to shuffle...
     while (0 !== currentIndex) {
@@ -89,7 +90,7 @@ function shufflePieces() {
         currentIndex -= 1;
 
         // And swap it with the current element.
-        [pieces[currentIndex], pieces[randomIndex]] = [pieces[randomIndex], pieces[currentIndex]];
+        [arrayOfPieces[currentIndex], arrayOfPieces[randomIndex]] = [arrayOfPieces[randomIndex], arrayOfPieces[currentIndex]];
     }
 }
 
@@ -105,6 +106,62 @@ function setInitialPolyminoTable() {
     }
 
     $('#td-3-3, #td-3-4, #td-4-3, #td-4-4').removeClass('empty-cell').addClass('border-cell');
+}
+
+function generatePolyminoTable() {
+    localStorage['level'] = level;
+    printLevel();
+    resetField();
+    const table = $('table.polytable');
+    //const numberOfPieces = level + 3;
+    //const possibilityOfBarriers = 1/(1 - numberOfBarriers/numberOfPieces);
+    const repeats = 3;
+    const numberOfPieces = Math.floor(level/repeats) + 3;
+    const numberOfBarriers = (level % repeats);
+    const area = (numberOfPieces + numberOfBarriers) * 4;
+    const numberOfRows = 4;
+    const numberOfColumns = numberOfPieces + numberOfBarriers;
+
+    table.empty();
+    //numberOfRows = 8;
+    //numberOfColumns = 8;
+    //let barriersSet = 0;
+    for (let i = 0; i < numberOfRows; i++) {
+        const row = $(`<tr class='field-row' id='tr-${i}'></tr>`);
+        for (let j = 0; j < numberOfColumns; j++) {
+            let td = $(`<td class='cell empty-cell' id='td-${i}-${j}'></td>`);
+            row.append(td);
+            /*if (Math.floor(Math.random()*possibilityOfBarriers) && barriersSet < numberOfBarriers * 4) {
+                td.addClass('border-cell');
+                barriersSet++;
+            } else {
+                td.addClass('empty-cell');
+            }*/
+        }
+        table.append(row);
+    }
+    /*if (barriersSet < numberOfBarriers * 4) {
+        for (let i = barriersSet; i < numberOfBarriers * 4) {
+
+        }
+    }*/
+    for (let i = 0; i < numberOfBarriers * 4; i++) {
+        let allCells = $('td.empty-cell');
+        $(allCells[Math.floor(Math.random() * (area - i))])
+            .removeClass('empty-cell')
+            .addClass('border-cell');
+    }
+
+    /*resetField();
+    $('#give-up').show();*/
+    shufflePieces();
+    /*if ($('span.statisticSpan').children('.bad').length > 0) {
+        alert("It's impossible to cover table with such number of empty cells!");
+        return;
+    }*/
+    const arr = transformTableToMatrix();
+    const header = createXListForExactCoverProblem(arr);
+    startGame(header);
 }
 
 // Counting connected components in a table
@@ -145,6 +202,10 @@ function countStatistic() {
     }
 
     $(".statisticSpan").html(txt);
+}
+
+function printLevel() {
+    $(".statisticSpan").html(level);
 }
 
 function transformTableToMatrix() {
@@ -399,8 +460,11 @@ function resetField() {
 
 $(document).ready(
     function() {
-        setInitialPolyminoTable();
-        countStatistic();
+        //setInitialPolyminoTable();
+        //countStatistic();
+        level = localStorage && localStorage.getItem('level') ? localStorage['level'] : 0;
+        printLevel();
+        generatePolyminoTable();
         let solutionArea = $('div.solutionArea');
 
         $('#go').click(
@@ -433,7 +497,7 @@ $(document).ready(
             }
         );
 
-        $(document).on('click', 'td.cell',
+        /*$(document).on('click', 'td.cell',
             function () {
                 resetField();
 
@@ -446,7 +510,7 @@ $(document).ready(
                     countStatistic();
                 }
             }
-        );
+        );*/
 
         $("#resetBarrierCells").click(
             function () {

@@ -16,27 +16,28 @@
 	</head>
 	<body>
 		<div class="demo-layout-transparent mdl-layout mdl-js-layout">
-            <header class="mdl-layout__header mdl-layout__header--transparent">
+            <!--<header class="mdl-layout__header mdl-layout__header&#45;&#45;transparent">
                 <div class="mdl-layout__header-row">
-                    <!-- Title -->
+                    &lt;!&ndash; Title &ndash;&gt;
                     <span class="mdl-layout-title">Polymino</span>
                 </div>
 		    </header>
 		    <div class="mdl-layout__drawer">
 			    <span class="mdl-layout-title">Settings</span>
-		    </div>
+		    </div>-->
 		    <main class="mdl-layout__content">
 			    <div class="polyomino-area">
-                    <div class='statistic'> Number of empty cells:&nbsp;<span class='statisticSpan'></span>
+                    <div class='statistic'> <!--Number of empty cells:&nbsp;<span class='statisticSpan'></span>
                         <button id="resetBarrierCells"
-                            class="mdl-button mdl-js-button mdl-button--icon mdl-button--raised mdl-button--accent mdl-js-ripple-effect">
+                            class="mdl-button mdl-js-button mdl-button&#45;&#45;icon mdl-button&#45;&#45;raised mdl-button&#45;&#45;accent mdl-js-ripple-effect">
                             <i class="material-icons">clear</i>
                         </button>
                         <div class="mdl-tooltip" for="resetBarrierCells">
                             Reset all barrier cells
-                        </div>
+                        </div>-->
+                        Level completed:&nbsp;<span class='statisticSpan'></span>
                     </div>
-                    <div>
+                    <div style="display: none;">
                         <button id="go" class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent mdl-js-ripple-effect">
                             Go!
                         </button>
@@ -44,7 +45,7 @@
                             Give up
                         </button>
                     </div>
-                    <div class='arrow-area'>
+                    <div class='arrow-area' style="display: none;">
                         <table class='arrowtable'>
                             <tr class="arrow-tr">
                                 <td class="arrow-td"></td>

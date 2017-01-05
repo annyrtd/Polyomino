@@ -21,8 +21,10 @@ function startGame(header) {
     search(header, solution, 0);
 
     if (!isSolutionFound) {
-        alertWithInterval('There is no solution!', interval * (stepOfInterval + 1));
-        solution.splice(0, solution.length);
+        generatePolyminoTable();
+        console.log('no solution');
+        //alertWithInterval('There is no solution!', interval * (stepOfInterval + 1));
+        //solution.splice(0, solution.length);
         return;
     }
 
@@ -31,6 +33,19 @@ function startGame(header) {
 
     const solutionArea = $('div.solutionArea');
     solutionPieces = print(solution);
+
+    let numberOfRows = solutionPieces[0].maxrow - solutionPieces[0].minrow;
+    let numberOfCols = solutionPieces[0].maxcol - solutionPieces[0].mincol;
+    if (solutionPieces.every(piece =>
+        (piece.maxcol - piece.mincol) == numberOfCols && (piece.maxrow - piece.minrow) == numberOfRows
+    )) {
+        console.log('all pieces are the same');
+        generatePolyminoTable();
+        return;
+    }
+
+    shufflePieces(solutionPieces);
+
     solutionPieces.forEach((piece, index) => {
         let view = piece.getView();
         solutionArea.append(view);
@@ -62,8 +77,8 @@ function startGame(header) {
             });
 
             function moveAt(e) {
-                view.style.left = (e.pageX - shiftX - 4) + 'px';
-                view.style.top = (e.pageY - shiftY - 4) + 'px';
+                view.style.left = (e.pageX - shiftX - 8) + 'px';
+                view.style.top = (e.pageY - shiftY) + 'px';
             }
 
             function getRowAndCol(e) {
@@ -112,8 +127,8 @@ function startGame(header) {
                     currentPieceCells.forEach(item => {
                         item.addClass('set');
                     });
-                    view.style.left = `${columnPosition - 4}px`;
-                    view.style.top = `${rowPosition - 4}px`;
+                    view.style.left = `${columnPosition - 8}px`;
+                    view.style.top = `${rowPosition}px`;
                     view.style.display = 'block';
                     piecesSet++;
                 } else {
@@ -132,6 +147,8 @@ function startGame(header) {
                     isGameFinished = true;
                     $('#give-up').hide();
                     alertWithInterval('Congratulations!', 50);
+                    level++;
+                    generatePolyminoTable();
                 }
             };
         };
