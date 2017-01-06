@@ -50,8 +50,8 @@ class Node {
 }
 
 class Piece {
-    constructor(coordinates) {
-        this.color = getRandomColor();
+    constructor(coordinates, color = getRandomColor()) {
+        this.color = color;
         let nodes = [];
         let maxrow = coordinates[0][0];
         let minrow = coordinates[0][0];

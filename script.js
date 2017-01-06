@@ -107,7 +107,7 @@ function generatePolyminoTable() {
     $('span.pieceCost').text(pieceCost);
     $('span.giveUpCost').text(giveUpCost);
 
-    const numberOfBarriers = (level % repeats);
+    const numberOfBarriers = (level % repeats) * 2;
     const area = (numberOfPieces + numberOfBarriers) * 4;
     let numberOfRows, numberOfColumns;
     let side;

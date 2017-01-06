@@ -10,6 +10,7 @@
 	border-collapse: collapse;
 	border: 1px black solid;
 	float: left;
+	margin-bottom: 16px;
 }
 
 .polytable td {

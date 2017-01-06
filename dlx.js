@@ -177,9 +177,27 @@ function placePiece() {
 }
 
 function placePieceNoInterval() {
-    let index = parseInt($(this).attr('id').replace('piece', ''));
-    coverPieceInTable(solutionPieces[index]);
-    $(this).remove();
+    let piece = $(this);
+    let left = parseInt(piece.css('left'));
+    let top = parseInt(piece.css('top'));
+    let row = Math.round(top / 35);
+    let column = Math.round((left + 8) / 35);
+    let currentCoordinatesAttribute = piece.attr('data-nodes');
+    let currentPieceTdCoordinates = currentCoordinatesAttribute
+        .split(/\s*-\s*/)
+        .map(item => {
+            let coordinates = item.split(/\s*,\s*/);
+            return [parseInt(coordinates[0]) + row, parseInt(coordinates[1]) + column];
+        });
+
+    let index = parseInt(piece.attr('id').replace('piece', ''));
+    let solutionPiece = solutionPieces[index];
+    coverPieceInTable(new Piece(currentPieceTdCoordinates, solutionPiece.color));
+
+
+    //coverPieceInTable(solutionPieces[index]);
+
+    piece.remove();
 }
 
 function getCoordinates(elem) {
