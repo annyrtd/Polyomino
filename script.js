@@ -74,7 +74,7 @@ const pieces = [
         [0, 0], [1, 0], [2, 0], [3, 0]
     ]),
 ];
-const repeats = 3;
+const repeats = 2;
 let level;
 let score;
 let pieceCost = 400;

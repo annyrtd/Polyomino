@@ -152,8 +152,8 @@ function startGame(header) {
                     if (piecesSet == solutionLength) {
                         alertWithInterval('Congratulations!', 50);
                         $('.piece').each(placePieceNoInterval);
-                        level++;
-                        score = parseInt(score + scoreForLevel);
+                        localStorage['level'] = ++level;
+                        localStorage['score'] = score = parseInt(score + scoreForLevel);
                         $('#give-up, #add-piece').prop('disabled', true);
                         $('#next').prop('disabled', false);
                     }
