@@ -75,6 +75,7 @@ function startGame(header) {
                         piecesSet--;
                     }
                     td.removeClass('set');
+                    td.removeAttr('data-piece');
                     return true;
                 });
 
@@ -128,16 +129,19 @@ function startGame(header) {
                     if (isPieceSet) {
                         currentPieceCells.forEach(item => {
                             item.addClass('set');
+                            item.attr('data-piece', $(view).attr('id'));
                         });
                         view.style.left = `${columnPosition - 8}px`;
                         view.style.top = `${rowPosition}px`;
                         view.style.display = 'block';
+                        $(view).addClass('pieceSet');
                         piecesSet++;
                     } else {
                         view.style.position = '';
                         view.style.left = '';
                         view.style.top = '';
                         view.style.display = '';
+                        $(view).removeClass('pieceSet');
                     }
 
                     document.onmousemove = null;
@@ -246,24 +250,33 @@ function search(header, solution, k) {
 }
 
 function setTimeoutForCoveringPiece(piece, removedPiece) {
-    if (!piece) return;
-
-    stepOfInterval++;
-    setTimeout(() => {
-        coverPieceInTable(piece);
-        if (removedPiece) {
-            removedPiece.remove();
-        }
-    }, interval * stepOfInterval);
+    return new Promise((resolve, reject) => {
+        if (!piece)
+            return;
+        stepOfInterval++;
+        setTimeout(() => {
+            coverPieceInTable(piece);
+            if (removedPiece) {
+                removedPiece.remove();
+            }
+            resolve();
+        }, interval * stepOfInterval);
+    });
 }
 
 function coverPieceInTable(piece) {
     const nodes = piece.nodes;
-    const color = piece.color;
+    const backgroundColor = piece.color;
     for (let i = 0; i < nodes.length; i++) {
         const row = nodes[i].row;
         const column = nodes[i].column;
-        $('#td-' + row + '-' + column).css('backgroundColor', color).addClass('set');
+        const td = $('#td-' + row + '-' + column);
+        //let gradient = `linear-gradient(135deg, rgb(200,200,200) 0%,${color} 50%,rgb(50,50,50) 100%)`;
+        //let background = `radial-gradient(ellipse at center, rgb(200, 200, 200) 0%, ${color} 100%)`;
+        //let boxShadow = 'rgba(255, 255, 255, 0.3) 0px 0px 10px 16px inset';
+        let border = '1px dashed #121212';
+        td.css({backgroundColor, /*boxShadow,*/ border});
+        td.addClass('set');
     }
 }
 

@@ -77,7 +77,7 @@ const pieces = [
 const repeats = 3;
 let level;
 let score;
-let pieceCost = 300;
+let pieceCost = 400;
 let giveUpCost;
 
 // algo: https://en.wikipedia.org/wiki/Fisher-Yates_shuffle
@@ -281,6 +281,7 @@ function initialSetUp() {
 
 function resetField() {
     $('td.cell').removeClass('set').css('backgroundColor', '');
+    $('td.cell').removeAttr('data-piece');
     //solutionArea.find('.piece').remove();
     $('.piece').remove();
 }
@@ -303,17 +304,89 @@ $(document).ready(
 
                 let allPieces = $('.piece');
                 let removedPiece = $(allPieces[Math.floor(Math.random()*allPieces.length)]);
-                let index = parseInt(removedPiece.attr('id').replace('piece', ''));
-                stepOfInterval = 0;
-                setTimeoutForCoveringPiece(solutionPieces[index], removedPiece);
-                piecesSet++;
-                if (piecesSet == solutionLength) {
-                    alertWithInterval('Congratulations!', 50);
-                    level++;
-                    score = parseInt(score + scoreForLevel);
-                    $('#give-up, #add-piece').prop('disabled', true);
-                    $('#next').prop('disabled', false);
+
+                if (removedPiece.hasClass('pieceSet')) {
+                    let left = parseInt(removedPiece.css('left'));
+                    let top = parseInt(removedPiece.css('top'));
+                    let row = Math.round(top / 35);
+                    let column = Math.round((left + 8) / 35);
+                    let currentCoordinatesAttribute = removedPiece.attr('data-nodes');
+                    let currentPieceTdCoordinates = currentCoordinatesAttribute.split('-').map(item => Node.fromString(item));
+
+                    currentPieceTdCoordinates.every(item => {
+                        let tdRow = parseInt(item.row) + row;
+                        let tdCol = parseInt(item.column) + column;
+                        let td = $(`#td-${tdRow}-${tdCol}`);
+                        td.removeClass('set');
+                        td.removeAttr('data-piece');
+                        return true;
+                    });
+
+                    removedPiece.css({
+                        position: '',
+                        left: '',
+                        top: '',
+                        display: ''
+                    });
+                    removedPiece.removeClass('pieceSet');
+
+                    piecesSet--;
                 }
+
+                let index = parseInt(removedPiece.attr('id').replace('piece', ''));
+                let solutionPiece = solutionPieces[index];
+
+                solutionPiece.nodes.every(function(node) {
+                    const solutionRow = node.row;
+                    const solutionColumn = node.column;
+                    const td = $('#td-' + solutionRow + '-' + solutionColumn);
+                    let pieceId = td.attr('data-piece');
+                    if (!pieceId) {
+                        return true;
+                    }
+                    piecesSet--;
+                    console.log(piecesSet);
+                    let coveringPiece = $(`#${pieceId}`);
+                    let left = parseInt(coveringPiece.css('left'));
+                    let top = parseInt(coveringPiece.css('top'));
+                    let row = Math.round(top / 35);
+                    let column = Math.round((left + 8) / 35);
+                    let currentCoordinatesAttribute = coveringPiece.attr('data-nodes');
+                    let currentPieceTdCoordinates = currentCoordinatesAttribute.split('-').map(item => Node.fromString(item));
+
+                    currentPieceTdCoordinates.every(item => {
+                        let tdRow = parseInt(item.row) + row;
+                        let tdCol = parseInt(item.column) + column;
+                        let td = $(`#td-${tdRow}-${tdCol}`);
+                        td.removeClass('set');
+                        td.removeAttr('data-piece');
+                        return true;
+                    });
+
+                    coveringPiece.css({
+                        position: '',
+                        left: '',
+                        top: '',
+                        display: ''
+                    });
+                    coveringPiece.removeClass('pieceSet');
+
+                    return true;
+                });
+
+                stepOfInterval = 0;
+                setTimeoutForCoveringPiece(solutionPiece, removedPiece).then(() => {
+                    piecesSet++;
+                    console.log(piecesSet);
+                    if (piecesSet == solutionLength) {
+                        alertWithInterval('Congratulations!', 50);
+                        $('.piece').each(placePieceNoInterval);
+                        level++;
+                        score = parseInt(score + scoreForLevel);
+                        $('#give-up, #add-piece').prop('disabled', true);
+                        $('#next').prop('disabled', false);
+                    }
+                });
             }
         );
 
