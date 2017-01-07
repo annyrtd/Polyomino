@@ -256,7 +256,7 @@ function search(header, solution, k) {
 }
 
 function setTimeoutForCoveringPiece(piece, removedPiece) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
         if (!piece)
             return;
         stepOfInterval++;
@@ -277,9 +277,6 @@ function coverPieceInTable(piece) {
         const row = nodes[i].row;
         const column = nodes[i].column;
         const td = $('#td-' + row + '-' + column);
-        //let gradient = `linear-gradient(135deg, rgb(200,200,200) 0%,${color} 50%,rgb(50,50,50) 100%)`;
-        //let background = `radial-gradient(ellipse at center, rgb(200, 200, 200) 0%, ${color} 100%)`;
-        //let boxShadow = 'rgba(255, 255, 255, 0.3) 0px 0px 10px 16px inset';
         let border = '1px dashed #121212';
         td.css({backgroundColor, /*boxShadow,*/ border});
         td.addClass('set');

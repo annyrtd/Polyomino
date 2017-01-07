@@ -289,9 +289,10 @@ function initialSetUp() {
 }
 
 function resetField() {
-    $('td.cell').removeClass('set').css('backgroundColor', '');
-    $('td.cell').removeAttr('data-piece');
-    //solutionArea.find('.piece').remove();
+    $('td.cell')
+        .removeClass('set')
+        .css('backgroundColor', '')
+        .removeAttr('data-piece');
     $('.piece').remove();
 }
 
