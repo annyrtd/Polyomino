@@ -14,6 +14,7 @@
 }
 
 .polytable td {
+	min-width: 32px;
 	width: 32px;
 	height: 32px;
 	border: 1px black solid;
@@ -87,4 +88,46 @@ table.piece {
 .buttons {
 	display: flex;
 	flex-wrap: wrap;
+}
+
+@media all and (max-width: 404px) {
+	.statistic {
+		font-size: 14px;
+	}
+
+	.menu button {
+		font-size: 12px;
+	}
+
+	.star {
+		font-size: 16px;
+	}
+
+	.buttons .star {
+		font-size: 14px;
+	}
+}
+
+@media all and (max-width: 360px) {
+	.statistic {
+		font-size: 12px;
+	}
+
+	.menu button {
+		font-size: 10px;
+	}
+
+	.star {
+		font-size: 14px;
+	}
+
+	.buttons .star {
+		font-size: 12px;
+	}
+}
+
+@media all and (max-width: 327px) {
+	.menu button {
+		padding: 0 8px;
+	}
 }

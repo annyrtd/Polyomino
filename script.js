@@ -1,25 +1,25 @@
 'use strict';
 
 /*const oldPieces = [
-    new Piece([
-        [0, 0], [0, 1], [0, 2]
-    ]),
-    new Piece([
-        [0, 0], [1, 0], [2, 0]
-    ]),
-    new Piece([
-        [0, 0], [0, 1], [1, 0]
-    ]),
-    new Piece([
-        [0, 0], [0, 1], [1, 1]
-    ]),
-    new Piece([
-        [0, 0], [1, 0], [1, 1]
-    ]),
-    new Piece([
-        [0, 1], [1, 0], [1, 1]
-    ])
-];*/
+ new Piece([
+ [0, 0], [0, 1], [0, 2]
+ ]),
+ new Piece([
+ [0, 0], [1, 0], [2, 0]
+ ]),
+ new Piece([
+ [0, 0], [0, 1], [1, 0]
+ ]),
+ new Piece([
+ [0, 0], [0, 1], [1, 1]
+ ]),
+ new Piece([
+ [0, 0], [1, 0], [1, 1]
+ ]),
+ new Piece([
+ [0, 1], [1, 0], [1, 1]
+ ])
+ ];*/
 const pieces = [
     new Piece([
         [0, 0], [1, 0], [1, 1], [2, 0]
@@ -74,11 +74,6 @@ const pieces = [
         [0, 0], [1, 0], [2, 0], [3, 0]
     ]),
 ];
-const repeats = 2;
-let level;
-let score;
-let pieceCost = 400;
-let giveUpCost;
 
 // algo: https://en.wikipedia.org/wiki/Fisher-Yates_shuffle
 function shufflePieces(arrayOfPieces = pieces) {
@@ -126,6 +121,19 @@ function generatePolyminoTable() {
         [numberOfRows, numberOfColumns] = [numberOfColumns, numberOfRows];
     }
 
+    let tableWidth = tableCellWidth * numberOfColumns + 32 * 2;
+    let tableHeight = tableCellWidth * numberOfRows + 32 * 2;
+    let windowWidth = document.body.scrollWidth;
+
+    if (tableWidth > windowWidth) {
+        if (tableHeight > windowWidth) {
+            numberOfColumns = 4;
+            numberOfRows = numberOfPieces + numberOfBarriers;
+        } else {
+            [numberOfRows, numberOfColumns] = [numberOfColumns, numberOfRows];
+        }
+    }
+
     table.empty();
     for (let i = 0; i < numberOfRows; i++) {
         const row = $(`<tr class='field-row' id='tr-${i}'></tr>`);
@@ -142,6 +150,7 @@ function generatePolyminoTable() {
             .removeClass('empty-cell')
             .addClass('border-cell');
     }
+
     shufflePieces();
     const arr = transformTableToMatrix();
     const header = createXListForExactCoverProblem(arr);
@@ -308,8 +317,8 @@ $(document).ready(
                 if (removedPiece.hasClass('pieceSet')) {
                     let left = parseInt(removedPiece.css('left'));
                     let top = parseInt(removedPiece.css('top'));
-                    let row = Math.round(top / 35);
-                    let column = Math.round((left + 8) / 35);
+                    let row = Math.round(top / tableCellWidth);
+                    let column = Math.round((left + 8) / tableCellWidth);
                     let currentCoordinatesAttribute = removedPiece.attr('data-nodes');
                     let currentPieceTdCoordinates = currentCoordinatesAttribute.split('-').map(item => Node.fromString(item));
 
@@ -349,8 +358,8 @@ $(document).ready(
                     let coveringPiece = $(`#${pieceId}`);
                     let left = parseInt(coveringPiece.css('left'));
                     let top = parseInt(coveringPiece.css('top'));
-                    let row = Math.round(top / 35);
-                    let column = Math.round((left + 8) / 35);
+                    let row = Math.round(top / tableCellWidth);
+                    let column = Math.round((left + 8) / tableCellWidth);
                     let currentCoordinatesAttribute = coveringPiece.attr('data-nodes');
                     let currentPieceTdCoordinates = currentCoordinatesAttribute.split('-').map(item => Node.fromString(item));
 
@@ -410,10 +419,12 @@ $(document).ready(
             }
         );
 
-        $('#next').click(function() {
-            $('#give-up, #add-piece').prop('disabled', false);
-            $(this).prop('disabled', true);
-            generatePolyminoTable();
-        });
+        $('#next').click(
+            function() {
+                $('#give-up, #add-piece').prop('disabled', false);
+                $(this).prop('disabled', true);
+                generatePolyminoTable();
+            }
+        );
     }
 );

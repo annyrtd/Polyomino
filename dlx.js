@@ -1,17 +1,5 @@
 'use strict';
 
-let isSolutionFound = false;
-const interval = 200;
-let stepOfInterval = 0;
-let currentPieceTdCoordinates;
-let currentCoordinatesAttribute;
-let piecesSet = 0;
-let solutionLength;
-let solution = [];
-let solutionPieces = [];
-let timeStart;
-const scoreForLevel = 500;
-
 function startGame(header) {
     isSolutionFound = false;
     stepOfInterval = 0;
@@ -88,8 +76,8 @@ function startGame(header) {
                     let offset = solutionArea.offset();
                     let containerX = e.pageX - offset.left;
                     let containerY = e.pageY - offset.top;
-                    let row = Math.round((containerY - shiftY) / 35);
-                    let column = Math.round((containerX - shiftX) / 35);
+                    let row = Math.round((containerY - shiftY) / tableCellWidth);
+                    let column = Math.round((containerX - shiftX) / tableCellWidth);
                     return {row, column};
                 }
 
@@ -105,8 +93,8 @@ function startGame(header) {
                 cell.onmouseup = function (e) {
                     let row, column;
                     ({row, column} = getRowAndCol(e));
-                    let rowPosition = row * 35;
-                    let columnPosition = column * 35;
+                    let rowPosition = row * tableCellWidth;
+                    let columnPosition = column * tableCellWidth;
                     let currentPieceCells = [];
                     currentPieceTdCoordinates.every(item => {
                         let tdRow = parseInt(item.row) + row;
@@ -180,8 +168,8 @@ function placePieceNoInterval() {
     let piece = $(this);
     let left = parseInt(piece.css('left'));
     let top = parseInt(piece.css('top'));
-    let row = Math.round(top / 35);
-    let column = Math.round((left + 8) / 35);
+    let row = Math.round(top / tableCellWidth);
+    let column = Math.round((left + 8) / tableCellWidth);
     let currentCoordinatesAttribute = piece.attr('data-nodes');
     let currentPieceTdCoordinates = currentCoordinatesAttribute
         .split(/\s*-\s*/)

@@ -1,7 +1,5 @@
 'use strict';
 
-const localStorage = window.localStorage || {};
-
 class RootObject {
     constructor({left, right}) {
         this.left = left;
