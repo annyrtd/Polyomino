@@ -1,3 +1,11 @@
+.mdl-layout__drawer-button {
+	outline: none;
+}
+
+.is-small-screen .polyomino-area{
+	margin-left: 32px;
+}
+
 .demo-layout-transparent {
 	background-color: #FFCD70;
 }
@@ -29,7 +37,7 @@
 }
 
 .polyomino-area {
-	padding: 0 32px 32px;
+	padding: 0 32px 0;
 }
 
 .statistic {
@@ -57,7 +65,7 @@ table.piece {
 }
 
 .solutionArea {
-	margin: 32px 0;
+	margin: 32px 0 0;
 	position: relative;
 	width: 100%;
 }
@@ -71,6 +79,11 @@ table.piece {
 .menu {
 	display: flex;
 	padding: 32px 0;
+}
+
+
+.is-small-screen .menu {
+	padding-top: 20px;
 }
 
 .price {
@@ -131,4 +144,24 @@ table.piece {
 	.menu button {
 		padding: 0 8px;
 	}
+}
+
+.modeDiv {
+	padding-left: 40px;
+}
+
+label.mdl-radio {
+	line-height: 40px;
+}
+
+.mdl-radio__outer-circle {
+	top: 11px;
+}
+
+.mdl-radio__inner-circle {
+	top: 15px;
+}
+
+.mdl-radio__ripple-container {
+	top: -2px;
 }

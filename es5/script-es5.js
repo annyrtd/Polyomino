@@ -47,12 +47,12 @@ function shufflePieces() {
 function generatePolyminoTable() {
     saveToLocalStorage();
     initialSetUp();
-    var table = $('table.polytable');
+    var table = computed.find('table.polytable');
     var numberOfPieces = Math.floor(level / repeats) + 3;
 
     giveUpCost = Math.floor(pieceCost * numberOfPieces * 0.8 / 100) * 100;
-    $('span.pieceCost').text(pieceCost);
-    $('span.giveUpCost').text(giveUpCost);
+    computed.find('span.pieceCost').text(pieceCost);
+    computed.find('span.giveUpCost').text(giveUpCost);
 
     var numberOfBarriers = level % repeats * 2;
     var area = (numberOfPieces + numberOfBarriers) * 4;
@@ -98,27 +98,27 @@ function generatePolyminoTable() {
     }
 
     for (var _i = 0; _i < numberOfBarriers * 4; _i++) {
-        var allCells = $('td.empty-cell');
+        var allCells = computed.find('td.empty-cell');
         $(allCells[Math.floor(Math.random() * (area - _i))]).removeClass('empty-cell').addClass('border-cell');
     }
 
     shufflePieces();
-    var arr = transformTableToMatrix();
+    var arr = transformTableToMatrix(computed);
     var header = createXListForExactCoverProblem(arr);
     startGame(header);
 }
 
 function printLevel() {
-    $(".levelSpan").html(level);
+    computed.find(".levelSpan").html(level);
 }
 
 function printScore() {
-    $(".scoreSpan").html(score);
+    computed.find(".scoreSpan").html(score);
 }
 
-function transformTableToMatrix() {
+function transformTableToMatrix(container) {
     var arr = [];
-    $("table.polytable tr.field-row").each(function (row) {
+    container.find("table.polytable tr.field-row").each(function (row) {
         arr[arr.length] = [];
         //noinspection JSValidateTypes
         $(this).children('td.cell').each(function () {
@@ -238,18 +238,18 @@ function initialSetUp() {
 }
 
 function resetField() {
-    $('td.cell').removeClass('set').css('backgroundColor', '').removeAttr('data-piece');
-    $('.piece').remove();
+    computed.find('td.cell').removeClass('set').css('backgroundColor', '').removeAttr('data-piece');
+    computed.find('.piece').remove();
 }
 
 $(document).ready(function () {
+    computed = $('.computed');
+    creative = $('.creative');
     restoreFromLocalStorage();
-    level = level || 0;
-    score = score || 0;
     generatePolyminoTable();
-    var solutionArea = $('div.solutionArea');
+    var solutionArea = computed.find('div.solutionArea');
 
-    $('#add-piece').click(function () {
+    computed.find('#add-piece').click(function () {
         if (score - pieceCost < 0) {
             alertWithInterval("You haven't got enough money!");
             return;
@@ -258,7 +258,7 @@ $(document).ready(function () {
         saveToLocalStorage();
         printScore();
 
-        var allPieces = $('.piece');
+        var allPieces = computed.find('.piece');
         var removedPiece = $(allPieces[Math.floor(Math.random() * allPieces.length)]);
 
         if (removedPiece.hasClass('pieceSet')) {
@@ -275,7 +275,7 @@ $(document).ready(function () {
                 currentPieceTdCoordinates.every(function (item) {
                     var tdRow = parseInt(item.row) + row;
                     var tdCol = parseInt(item.column) + column;
-                    var td = $('#td-' + tdRow + '-' + tdCol);
+                    var td = computed.find('#td-' + tdRow + '-' + tdCol);
                     td.removeClass('set');
                     td.removeAttr('data-piece');
                     return true;
@@ -299,14 +299,14 @@ $(document).ready(function () {
         solutionPiece.nodes.every(function (node) {
             var solutionRow = node.row;
             var solutionColumn = node.column;
-            var td = $('#td-' + solutionRow + '-' + solutionColumn);
+            var td = computed.find('#td-' + solutionRow + '-' + solutionColumn);
             var pieceId = td.attr('data-piece');
             if (!pieceId) {
                 return true;
             }
             piecesSet--;
             console.log(piecesSet);
-            var coveringPiece = $('#' + pieceId);
+            var coveringPiece = computed.find('#' + pieceId);
             var left = parseInt(coveringPiece.css('left'));
             var top = parseInt(coveringPiece.css('top'));
             var row = Math.round(top / tableCellWidth);
@@ -319,7 +319,7 @@ $(document).ready(function () {
             currentPieceTdCoordinates.every(function (item) {
                 var tdRow = parseInt(item.row) + row;
                 var tdCol = parseInt(item.column) + column;
-                var td = $('#td-' + tdRow + '-' + tdCol);
+                var td = computed.find('#td-' + tdRow + '-' + tdCol);
                 td.removeClass('set');
                 td.removeAttr('data-piece');
                 return true;
@@ -342,16 +342,17 @@ $(document).ready(function () {
             console.log(piecesSet);
             if (piecesSet == solutionLength) {
                 alertWithInterval('Congratulations!', 50);
-                $('.piece').each(placePieceNoInterval);
+                computed.find('.piece').each(placePieceNoInterval);
                 level++;
-                score = parseInt(score + scoreForLevel);
-                $('#give-up, #add-piece').prop('disabled', true);
-                $('#next').prop('disabled', false);
+                score = parseInt(score) + parseInt(scoreForLevel);
+                saveToLocalStorage();
+                computed.find('#give-up, #add-piece').prop('disabled', true);
+                computed.find('#next').prop('disabled', false);
             }
         });
     });
 
-    $('#give-up').click(function () {
+    computed.find('#give-up').click(function () {
         if (score - giveUpCost < 0) {
             alertWithInterval("You haven't got enough money!");
             return;
@@ -361,18 +362,35 @@ $(document).ready(function () {
         printScore();
 
         stepOfInterval = 0;
-        $('.piece[style]').each(placePiece);
-        $('.piece').each(placePiece);
+        computed.find('.piece[style]').each(placePiece);
+        computed.find('.piece').each(placePiece);
 
         level++;
-        score = parseInt(score + scoreForLevel);
-        $('#give-up, #add-piece').prop('disabled', true);
-        $('#next').prop('disabled', false);
+        score = parseInt(score) + parseInt(scoreForLevel);
+        saveToLocalStorage();
+        computed.find('#give-up, #add-piece').prop('disabled', true);
+        computed.find('#next').prop('disabled', false);
     });
 
-    $('#next').click(function () {
-        $('#give-up, #add-piece').prop('disabled', false);
+    computed.find('#next').click(function () {
+        computed.find('#give-up, #add-piece').prop('disabled', false);
         $(this).prop('disabled', true);
         generatePolyminoTable();
+    });
+
+    $('#computed').change(function () {
+        if ($(this).prop("checked")) {
+            //setup computed mode
+            $('main.mdl-layout__content.computed').show();
+            $('main.mdl-layout__content.creative').hide();
+        }
+    });
+
+    $('#creative').change(function () {
+        if ($(this).prop("checked")) {
+            //setup creative mode
+            $('main.mdl-layout__content.computed').hide();
+            $('main.mdl-layout__content.creative').show();
+        }
     });
 });

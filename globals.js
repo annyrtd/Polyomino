@@ -1,4 +1,4 @@
-const localStorage = window.localStorage || {};
+'use strict';
 
 let isSolutionFound = false;
 const interval = 200;
@@ -12,13 +12,23 @@ let solutionPieces = [];
 let timeStart;
 const scoreForLevel = 500;
 
+let stepOfIntervalCreative = 0;
+let currentPieceTdCoordinatesCreative;
+let currentCoordinatesAttributeCreative;
+let piecesSetCreative = 0;
+let solutionLengthCreative;
+let solutionCreative = [];
+let solutionPiecesCreative = [];
+
 const repeats = 2;
-let level;
-let score;
+let level = 0;
+let score = 0;
 let pieceCost = 400;
 let giveUpCost;
 
 const tableCellWidth = 35;
+let computed;
+let creative;
 
 function saveToLocalStorage() {
     if (localStorage) {

@@ -19,7 +19,7 @@ function startGame(header) {
     piecesSet = 0;
     solutionLength = solution.length;
 
-    var solutionArea = $('div.solutionArea');
+    var solutionArea = computed.find('div.solutionArea');
     solutionPieces = print(solution);
 
     var numberOfRows = solutionPieces[0].maxrow - solutionPieces[0].minrow;
@@ -65,7 +65,7 @@ function startGame(header) {
                 currentPieceTdCoordinates.every(function (item) {
                     var tdRow = parseInt(item.row) + row;
                     var tdCol = parseInt(item.column) + column;
-                    var td = $('#td-' + tdRow + '-' + tdCol);
+                    var td = computed.find('#td-' + tdRow + '-' + tdCol);
                     if (td.hasClass('set') && !isPieceRemoved) {
                         isPieceRemoved = true;
                         piecesSet--;
@@ -113,7 +113,7 @@ function startGame(header) {
                     currentPieceTdCoordinates.every(function (item) {
                         var tdRow = parseInt(item.row) + row;
                         var tdCol = parseInt(item.column) + column;
-                        var cell = $('#td-' + tdRow + '-' + tdCol).not('.set').not('.border-cell');
+                        var cell = computed.find('#td-' + tdRow + '-' + tdCol).not('.set').not('.border-cell');
 
                         if (cell.length > 0) {
                             currentPieceCells.push(cell);
@@ -152,12 +152,12 @@ function startGame(header) {
                     console.log(piecesSet);
                     if (piecesSet == solutionLength) {
                         alertWithInterval('Congratulations!', 50);
-                        $('.piece').each(placePieceNoInterval);
+                        computed.find('.piece').each(placePieceNoInterval);
                         level++;
                         score = parseInt(score) + parseInt(scoreForLevel);
                         saveToLocalStorage();
-                        $('#give-up, #add-piece').prop('disabled', true);
-                        $('#next').prop('disabled', false);
+                        computed.find('#give-up, #add-piece').prop('disabled', true);
+                        computed.find('#next').prop('disabled', false);
                     }
                 };
             };
@@ -285,7 +285,7 @@ function coverPieceInTable(piece) {
     for (var i = 0; i < nodes.length; i++) {
         var row = nodes[i].row;
         var column = nodes[i].column;
-        var td = $('#td-' + row + '-' + column);
+        var td = computed.find('#td-' + row + '-' + column);
         var border = '1px dashed #121212';
         td.css({ backgroundColor: backgroundColor, /*boxShadow,*/border: border });
         td.addClass('set');
