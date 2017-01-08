@@ -92,8 +92,7 @@ function shufflePieces(arrayOfPieces = pieces) {
 }
 
 function generatePolyminoTable() {
-    localStorage['level'] = level;
-    localStorage['score'] = parseInt(score);
+    saveToLocalStorage();
     initialSetUp();
     const table = $('table.polytable');
     const numberOfPieces = Math.floor(level / repeats) + 3;
@@ -298,8 +297,9 @@ function resetField() {
 
 $(document).ready(
     function() {
-        level = localStorage && localStorage.getItem('level') ? parseInt(localStorage['level']) : 0;
-        score = localStorage && localStorage.getItem('score') ? parseInt(localStorage['score']) : 0;
+        restoreFromLocalStorage();
+        level = level || 0;
+        score = score || 0;
         generatePolyminoTable();
         let solutionArea = $('div.solutionArea');
 
@@ -309,7 +309,8 @@ $(document).ready(
                     alertWithInterval("You haven't got enough money!");
                     return;
                 }
-                localStorage['score'] = score = score - pieceCost;
+                score = score - pieceCost;
+                saveToLocalStorage();
                 printScore();
 
                 let allPieces = $('.piece');
@@ -406,7 +407,8 @@ $(document).ready(
                     alertWithInterval("You haven't got enough money!");
                     return;
                 }
-                localStorage['score'] = score = score - giveUpCost;
+                score = score - giveUpCost;
+                saveToLocalStorage();
                 printScore();
 
                 stepOfInterval = 0;

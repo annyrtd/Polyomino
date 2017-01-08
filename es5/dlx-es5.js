@@ -19,14 +19,14 @@ function startGame(header) {
     piecesSet = 0;
     solutionLength = solution.length;
 
-    const solutionArea = $('div.solutionArea');
+    var solutionArea = $('div.solutionArea');
     solutionPieces = print(solution);
 
-    let numberOfRows = solutionPieces[0].maxrow - solutionPieces[0].minrow;
-    let numberOfCols = solutionPieces[0].maxcol - solutionPieces[0].mincol;
-    if (solutionPieces.every(piece =>
-        (piece.maxcol - piece.mincol) == numberOfCols && (piece.maxrow - piece.minrow) == numberOfRows
-    )) {
+    var numberOfRows = solutionPieces[0].maxrow - solutionPieces[0].minrow;
+    var numberOfCols = solutionPieces[0].maxcol - solutionPieces[0].mincol;
+    if (solutionPieces.every(function (piece) {
+            return piece.maxcol - piece.mincol == numberOfCols && piece.maxrow - piece.minrow == numberOfRows;
+        })) {
         console.log('all pieces are the same');
         generatePolyminoTable();
         return;
@@ -34,30 +34,38 @@ function startGame(header) {
 
     shufflePieces(solutionPieces);
 
-    solutionPieces.forEach((piece, index) => {
-        let view = piece.getView();
+    solutionPieces.forEach(function (piece, index) {
+        var view = piece.getView();
         solutionArea.append(view);
-        view.setAttribute('id', `piece${index}`);
+        view.setAttribute('id', 'piece' + index);
 
-        $(view).find('td.pieceCell').each(function() {
-            let cell = this;
-            cell.onmousedown = function(e) {
+        $(view).find('td.pieceCell').each(function () {
+            var cell = this;
+            cell.onmousedown = function (e) {
                 view.style.display = '';
-                const coords = getCoordinates(view);
-                const shiftX = e.pageX - coords.left;
-                const shiftY = e.pageY - coords.top;
+                var coords = getCoordinates(view);
+                var shiftX = e.pageX - coords.left;
+                var shiftY = e.pageY - coords.top;
 
-                let isPieceSet = true;
+                var isPieceSet = true;
                 currentCoordinatesAttribute = view.getAttribute('data-nodes');
-                currentPieceTdCoordinates = currentCoordinatesAttribute.split('-').map(item => Node.fromString(item));
+                currentPieceTdCoordinates = currentCoordinatesAttribute.split('-').map(function (item) {
+                    return Node.fromString(item);
+                });
 
-                let row, column;
-                ({row, column} = getRowAndCol(e));
-                let isPieceRemoved = false;
-                currentPieceTdCoordinates.every(item => {
-                    let tdRow = parseInt(item.row) + row;
-                    let tdCol = parseInt(item.column) + column;
-                    let td = $(`#td-${tdRow}-${tdCol}`);
+                var row = void 0,
+                    column = void 0;
+
+                var _getRowAndCol = getRowAndCol(e);
+
+                row = _getRowAndCol.row;
+                column = _getRowAndCol.column;
+
+                var isPieceRemoved = false;
+                currentPieceTdCoordinates.every(function (item) {
+                    var tdRow = parseInt(item.row) + row;
+                    var tdCol = parseInt(item.column) + column;
+                    var td = $('#td-' + tdRow + '-' + tdCol);
                     if (td.hasClass('set') && !isPieceRemoved) {
                         isPieceRemoved = true;
                         piecesSet--;
@@ -68,17 +76,17 @@ function startGame(header) {
                 });
 
                 function moveAt(e) {
-                    view.style.left = (e.pageX - shiftX - 8) + 'px';
-                    view.style.top = (e.pageY - shiftY) + 'px';
+                    view.style.left = e.pageX - shiftX - 8 + 'px';
+                    view.style.top = e.pageY - shiftY + 'px';
                 }
 
                 function getRowAndCol(e) {
-                    let offset = solutionArea.offset();
-                    let containerX = e.pageX - offset.left;
-                    let containerY = e.pageY - offset.top;
-                    let row = Math.round((containerY - shiftY) / tableCellWidth);
-                    let column = Math.round((containerX - shiftX) / tableCellWidth);
-                    return {row, column};
+                    var offset = solutionArea.offset();
+                    var containerX = e.pageX - offset.left;
+                    var containerY = e.pageY - offset.top;
+                    var row = Math.round((containerY - shiftY) / tableCellWidth);
+                    var column = Math.round((containerX - shiftX) / tableCellWidth);
+                    return { row: row, column: column };
                 }
 
                 view.style.zIndex = 1000; // над другими элементами
@@ -91,16 +99,21 @@ function startGame(header) {
                 };
 
                 cell.onmouseup = function (e) {
-                    let row, column;
-                    ({row, column} = getRowAndCol(e));
-                    let rowPosition = row * tableCellWidth;
-                    let columnPosition = column * tableCellWidth;
-                    let currentPieceCells = [];
-                    currentPieceTdCoordinates.every(item => {
-                        let tdRow = parseInt(item.row) + row;
-                        let tdCol = parseInt(item.column) + column;
-                        let cell = $(`#td-${tdRow}-${tdCol}`)
-                            .not('.set').not('.border-cell');
+                    var row = void 0,
+                        column = void 0;
+
+                    var _getRowAndCol2 = getRowAndCol(e);
+
+                    row = _getRowAndCol2.row;
+                    column = _getRowAndCol2.column;
+
+                    var rowPosition = row * tableCellWidth;
+                    var columnPosition = column * tableCellWidth;
+                    var currentPieceCells = [];
+                    currentPieceTdCoordinates.every(function (item) {
+                        var tdRow = parseInt(item.row) + row;
+                        var tdCol = parseInt(item.column) + column;
+                        var cell = $('#td-' + tdRow + '-' + tdCol).not('.set').not('.border-cell');
 
                         if (cell.length > 0) {
                             currentPieceCells.push(cell);
@@ -115,12 +128,12 @@ function startGame(header) {
                     solutionArea.append(view);
 
                     if (isPieceSet) {
-                        currentPieceCells.forEach(item => {
+                        currentPieceCells.forEach(function (item) {
                             item.addClass('set');
                             item.attr('data-piece', $(view).attr('id'));
                         });
-                        view.style.left = `${columnPosition - 8}px`;
-                        view.style.top = `${rowPosition}px`;
+                        view.style.left = columnPosition - 8 + 'px';
+                        view.style.top = rowPosition + 'px';
                         view.style.display = 'block';
                         $(view).addClass('pieceSet');
                         piecesSet++;
@@ -149,40 +162,37 @@ function startGame(header) {
                 };
             };
 
-            cell.ondragstart = function() {
+            cell.ondragstart = function () {
                 return false;
             };
         });
 
-        view.ondragstart = function() {
+        view.ondragstart = function () {
             return false;
         };
     });
 }
 
 function placePiece() {
-    let index = parseInt($(this).attr('id').replace('piece', ''));
+    var index = parseInt($(this).attr('id').replace('piece', ''));
     setTimeoutForCoveringPiece(solutionPieces[index], $(this));
 }
 
 function placePieceNoInterval() {
-    let piece = $(this);
-    let left = parseInt(piece.css('left'));
-    let top = parseInt(piece.css('top'));
-    let row = Math.round(top / tableCellWidth);
-    let column = Math.round((left + 8) / tableCellWidth);
-    let currentCoordinatesAttribute = piece.attr('data-nodes');
-    let currentPieceTdCoordinates = currentCoordinatesAttribute
-        .split(/\s*-\s*/)
-        .map(item => {
-            let coordinates = item.split(/\s*,\s*/);
-            return [parseInt(coordinates[0]) + row, parseInt(coordinates[1]) + column];
-        });
+    var piece = $(this);
+    var left = parseInt(piece.css('left'));
+    var top = parseInt(piece.css('top'));
+    var row = Math.round(top / tableCellWidth);
+    var column = Math.round((left + 8) / tableCellWidth);
+    var currentCoordinatesAttribute = piece.attr('data-nodes');
+    var currentPieceTdCoordinates = currentCoordinatesAttribute.split(/\s*-\s*/).map(function (item) {
+        var coordinates = item.split(/\s*,\s*/);
+        return [parseInt(coordinates[0]) + row, parseInt(coordinates[1]) + column];
+    });
 
-    let index = parseInt(piece.attr('id').replace('piece', ''));
-    let solutionPiece = solutionPieces[index];
+    var index = parseInt(piece.attr('id').replace('piece', ''));
+    var solutionPiece = solutionPieces[index];
     coverPieceInTable(new Piece(currentPieceTdCoordinates, solutionPiece.color));
-
 
     //coverPieceInTable(solutionPieces[index]);
 
@@ -191,25 +201,25 @@ function placePieceNoInterval() {
 
 function getCoordinates(elem) {
     // (1)
-    const box = elem.getBoundingClientRect();
+    var box = elem.getBoundingClientRect();
 
-    const body = document.body;
-    const docEl = document.documentElement;
+    var body = document.body;
+    var docEl = document.documentElement;
 
     // (2)
-    const scrollTop = window.pageYOffset || docEl.scrollTop || body.scrollTop;
-    const scrollLeft = window.pageXOffset || docEl.scrollLeft || body.scrollLeft;
+    var scrollTop = window.pageYOffset || docEl.scrollTop || body.scrollTop;
+    var scrollLeft = window.pageXOffset || docEl.scrollLeft || body.scrollLeft;
 
     // (3)
-    const clientTop = docEl.clientTop || body.clientTop || 0;
-    const clientLeft = docEl.clientLeft || body.clientLeft || 0;
+    var clientTop = docEl.clientTop || body.clientTop || 0;
+    var clientLeft = docEl.clientLeft || body.clientLeft || 0;
 
     // (4)
-    const top = box.top + scrollTop - clientTop;
-    const left = box.left + scrollLeft - clientLeft;
+    var top = box.top + scrollTop - clientTop;
+    var left = box.left + scrollLeft - clientLeft;
 
     // (5)
-    return {top: Math.round(top), left: Math.round(left)};
+    return { top: Math.round(top), left: Math.round(left) };
 }
 
 // DLX algorithm
@@ -224,19 +234,18 @@ function search(header, solution, k) {
         }
         isSolutionFound = true;
         //print(solution);
-    }
-    else {
+    } else {
         if (isSolutionFound) {
             return;
         }
-        let current = chooseColumn(header);
+        var current = chooseColumn(header);
         coverColumn(current);
-        let row = current.down;
+        var row = current.down;
 
         while (row != current && !isSolutionFound) {
             solution[k] = row;
 
-            let j = row.right;
+            var j = row.right;
             while (j != row) {
                 coverColumn(j.column);
                 j = j.right;
@@ -257,11 +266,10 @@ function search(header, solution, k) {
 }
 
 function setTimeoutForCoveringPiece(piece, removedPiece) {
-    return new Promise((resolve) => {
-        if (!piece)
-            return;
+    return new Promise(function (resolve) {
+        if (!piece) return;
         stepOfInterval++;
-        setTimeout(() => {
+        setTimeout(function () {
             coverPieceInTable(piece);
             if (removedPiece) {
                 removedPiece.remove();
@@ -272,33 +280,35 @@ function setTimeoutForCoveringPiece(piece, removedPiece) {
 }
 
 function coverPieceInTable(piece) {
-    const nodes = piece.nodes;
-    const backgroundColor = piece.color;
-    for (let i = 0; i < nodes.length; i++) {
-        const row = nodes[i].row;
-        const column = nodes[i].column;
-        const td = $('#td-' + row + '-' + column);
-        let border = '1px dashed #121212';
-        td.css({backgroundColor, /*boxShadow,*/ border});
+    var nodes = piece.nodes;
+    var backgroundColor = piece.color;
+    for (var i = 0; i < nodes.length; i++) {
+        var row = nodes[i].row;
+        var column = nodes[i].column;
+        var td = $('#td-' + row + '-' + column);
+        var border = '1px dashed #121212';
+        td.css({ backgroundColor: backgroundColor, /*boxShadow,*/border: border });
         td.addClass('set');
     }
 }
 
-function alertWithInterval(message, interval = 50) {
-    setTimeout(() => {
+function alertWithInterval(message) {
+    var interval = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 50;
+
+    setTimeout(function () {
         alert(message);
     }, interval);
 }
 
 function print(solution) {
-    let pieces = [];
+    var pieces = [];
     console.log('Solution(' + solution.length + ' pieces):');
     //let interval = 50;
-    for (let i = 0; i < solution.length; i++) {
-        let o = solution[i];
-        let f = solution[i].left;
-        let str = '';
-        let nodes = [];
+    for (var i = 0; i < solution.length; i++) {
+        var o = solution[i];
+        var f = solution[i].left;
+        var str = '';
+        var nodes = [];
         while (o != f) {
             nodes.push(o.column.name.toArray());
             str += o.column.name.toString() + '   ';
@@ -313,9 +323,9 @@ function print(solution) {
 }
 
 function getRandomColor() {
-    const letters = '0123456789ABCDEF'.split('');
-    let color = '#';
-    for (let i = 0; i < 6; i++) {
+    var letters = '0123456789ABCDEF'.split('');
+    var color = '#';
+    for (var i = 0; i < 6; i++) {
         color += letters[Math.floor(Math.random() * 12 + 2)];
     }
     if (color == '#000000' || color == '#FFFFFF') {
@@ -325,9 +335,9 @@ function getRandomColor() {
 }
 
 function chooseColumn(header) {
-    let j = header.right;
-    let current = j;
-    let size = j.size;
+    var j = header.right;
+    var current = j;
+    var size = j.size;
 
     while (j != header) {
         if (j.size < size) {
@@ -343,9 +353,9 @@ function chooseColumn(header) {
 function coverColumn(current) {
     current.right.left = current.left;
     current.left.right = current.right;
-    let i = current.down;
+    var i = current.down;
     while (i != current) {
-        let j = i.right;
+        var j = i.right;
         while (j != i) {
             j.down.up = j.up;
             j.up.down = j.down;
@@ -359,9 +369,9 @@ function coverColumn(current) {
 }
 
 function uncoverColumn(current) {
-    let i = current.up;
+    var i = current.up;
     while (i != current) {
-        let j = i.left;
+        var j = i.left;
         while (j != i) {
             j.column.size++;
             j.down.up = j;

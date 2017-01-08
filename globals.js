@@ -19,3 +19,17 @@ let pieceCost = 400;
 let giveUpCost;
 
 const tableCellWidth = 35;
+
+function saveToLocalStorage() {
+    if (localStorage) {
+        localStorage['level'] = parseInt(level);
+        localStorage['score'] = parseInt(score);
+    }
+}
+
+function restoreFromLocalStorage() {
+    if (localStorage) {
+        level = parseInt(localStorage['level']);
+        score = parseInt(localStorage['score']);
+    }
+}
