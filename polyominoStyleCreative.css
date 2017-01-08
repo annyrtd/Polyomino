@@ -36,10 +36,6 @@ is-small-screen .creative .polyomino-area {
 	align-items: center;
 }
 
-.creative .arrow-area {
-	margin: 16px 0;
-}
-
 .creative .flexBarrier {
 	width: 100%;
 	height: 16px;
@@ -144,4 +140,13 @@ is-small-screen .creative .polyomino-area {
 	border: 1px black solid;
 	width: 280px;
 	height: 280px;
+}
+
+.creative .creative-buttons {
+	display: flex;
+	align-items: center;
+}
+
+.creative .creative-buttons > * {
+	margin-right: 32px;
 }
