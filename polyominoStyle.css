@@ -48,6 +48,7 @@ table.piece {
 	width: 32px;
 	height: 32px;
 	pointer-events: none;
+	border: 1px outset transparent;
 }
 
 .piece td.pieceCell {
